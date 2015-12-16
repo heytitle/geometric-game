@@ -8,3 +8,4 @@ test/bower_components
 .gitattributes
 .bowerrc
 .yo-rc.json
+.publish
