@@ -22,12 +22,13 @@ gulp.task('styles', () => {
 });
 
 function lint(files, options) {
-  return () => {
-    return gulp.src(files)
-      .pipe($.eslint(options))
-      .pipe($.eslint.format())
-      .pipe($.if(!browserSync.active, $.eslint.failAfterError()));
-  };
+    /* Disable for now */
+  // return () => {
+  //   return gulp.src(files)
+  //     .pipe($.eslint(options))
+  //     .pipe($.eslint.format())
+  //     .pipe($.if(!browserSync.active, $.eslint.failAfterError()));
+  // };
 }
 const testLintOptions = {
   env: {
