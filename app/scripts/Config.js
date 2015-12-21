@@ -39,3 +39,7 @@ var MOVEMENT_CHARACTER = {
         speedY: 6,
     }
 }
+
+var SOUNDFX = {
+    'addObject': 'https://www.freesound.org/data/previews/21/21389_36084-lq.mp3'
+}

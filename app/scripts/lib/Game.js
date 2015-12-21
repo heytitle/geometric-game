@@ -4,6 +4,7 @@ function Game(){
     this.objects           = [];
     this.duration          = DURATION.game;
     this.level             = 1;
+    this.soundFX           = new SoundFX();
 }
 
 Game.prototype.init = function(){
@@ -25,21 +26,13 @@ Game.prototype.initEvents = function(){
     /* Separate Line */
     this.board.drag(function(dx,dy,x,y){
         /* Move Event */
-        if( self.state != STATE.IDLE  && self.state != STATE.SELECTING ) {
+        if(  self.state == STATE.WAITING ) {
             console.log('Please wait a little bit.');
             return;
         }else {
             self.sepLine.addClass('show');
             self.setState('selecting');;
-            self.sepLine.animate({ opacity:0 }, DURATION.selecting, function(){
-                self.sepLine.removeClass('show');
-                self.sepLine.attr('opacity',1);
-                self.setState('waiting');
-
-                setTimeout(function(){
-                    self.setState('idle');
-                }, DURATION.waiting );
-            });
+            fadeOutLine();
         }
 
         var endpoints = [0,600];
@@ -51,12 +44,31 @@ Game.prototype.initEvents = function(){
     },function(x,y){
         self.sepLine.originX = x;
         self.sepLine.originY = y;
+    },function(x,y){
+        self.setState('waiting');
+        if( self.state == STATE.SELECTING ){
+            fadeOutLine();
+        }
     });
 
+    function fadeOutLine(){
+        self.sepLine.animate({ opacity:0 }, DURATION.selecting, function(){
+            self.sepLine.removeClass('show');
+            self.sepLine.attr('opacity',1);
+            self.setState('waiting');
+
+            setTimeout(function(){
+                self.setState('idle');
+            }, DURATION.waiting );
+        });
+    }
+
     /* Capture Key */
-    window.addEventListener("keypress", function(e){
-         if (e.charCode != "32" || self.state != STATE.SELECTING ) return;
+    window.addEventListener("keyup", function(e){
+         if ( !(e.keyCode == "32" && self.state == STATE.SELECTING) ) return;
          self.computeScore();
+         self.setState('waiting');
+         fadeOutLine();
     }, false);
 }
 
@@ -101,6 +113,7 @@ Game.prototype.setupLevel = function(){
     console.log(setting.objects);
     Object.keys(setting.objects).forEach( function(type){
         for( var i = 0; i < setting.objects[type]; i++ ){
+            self.soundFX.play('addObject');
             var obj = new Character(
                 self,
                 type,
@@ -135,4 +148,7 @@ Game.prototype.nextLevel = function(){
         this.level = MAX_LEVEL;
     }
     this.setupLevel();
+}
+
+Game.prototype.loadSound = function(){
 }
