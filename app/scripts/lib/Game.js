@@ -1,10 +1,13 @@
 function Game(){
-    this.state             = STATE.IDLE;
-    this.score             = 0;
-    this.objects           = [];
-    this.duration          = DURATION.game;
-    this.level             = 1;
-    this.soundFX           = new SoundFX();
+    this.state    = STATE.IDLE;
+    this.score    = 0;
+    this.objects  = [];
+    this.duration = DURATION.game;
+    this.level    = 1;
+    this.soundFX  = new SoundFX();
+
+    this.prevState = 'idle';
+    this.ended    = false;
 }
 
 Game.prototype.init = function(){
@@ -42,6 +45,7 @@ Game.prototype.initEvents = function(){
             self.sepLine.attr(attrKey, endpoints[i]);
         }
     },function(x,y){
+        if( self.state == STATE.waiting || self.state == STATE.TIMEUP ) return;
         self.sepLine.originX = x;
         self.sepLine.originY = y;
     },function(x,y){
@@ -65,7 +69,7 @@ Game.prototype.initEvents = function(){
 
     /* Capture Key */
     window.addEventListener("keyup", function(e){
-         if ( !(e.keyCode == "32" && self.state == STATE.SELECTING) ) return;
+         if ( !(e.keyCode == "32" && self.state == STATE.SELECTING) || self.state == STATE.TIMEUP ) return;
          self.computeScore();
          self.setState('waiting');
          fadeOutLine();
@@ -75,8 +79,6 @@ Game.prototype.initEvents = function(){
 Game.prototype.initObjectMovement = function(){
     var self = this;
     setInterval(function(){
-        if( self.state == STATE.TIMEUP ) return;
-
         var speedRatio = 0.5;
         if( self.state == STATE.SELECTING ) {
             speedRatio = 0.02;
@@ -105,6 +107,7 @@ Game.prototype.start = function(){
 Game.prototype.stop = function(){
     clearInterval(this.timer);
     this.setState('timeup');
+    this.board.undrag();
 }
 
 Game.prototype.setupLevel = function(){
@@ -130,7 +133,11 @@ Game.prototype.setState = function(state){
     if( Object.keys(STATE).indexOf(k) == -1 ){
         throw new Error( "This state doesn't exist : " + k );
     }
+    this.board.removeClass(this.prevState);
+
     this.state = STATE[state.toUpperCase()];
+    this.board.addClass(state);
+    this.prevState = state;
 }
 
 Game.prototype.computeScore = function(){
