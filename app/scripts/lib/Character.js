@@ -1,16 +1,6 @@
-var MOVEMENT_CHARACTER = {
-    dog: {
-        speedX: 5,
-        speedY: 5,
-    },
-    cat: {
-        speedX: 6,
-        speedY: 6,
-    }
-}
-function Character( name,x,y ){
+function Character( game, name,x,y ){
     var size = 30;
-    var obj = paper.image(
+    var obj = game.board.image(
         'images/characters/'+name + '.png',
         x,
         y,
@@ -60,15 +50,3 @@ function Character( name,x,y ){
 
     return obj;
 }
-
-// updateEntityPosition = function(something){
-//     something.x += something.spdX;
-//     something.y += something.spdY;
-
-//     if(something.x < 0 || something.x > WIDTH){
-//         something.spdX = -something.spdX;
-//     }
-//     if(something.y < 0 || something.y > HEIGHT){
-//         something.spdY = -something.spdY;
-//     }
-// }
