@@ -33,12 +33,17 @@ body {
 #wrapper{
     display:  inline-block;
     position: relative;
+    cursor: crosshair;
 }
 
 #game-board{
     width: 800px;
     height: 600px;
     border: 1px solid;
+
+    &.waiting {
+        cursor: wait;
+    }
 }
 
 #status-bar{
