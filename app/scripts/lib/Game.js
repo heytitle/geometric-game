@@ -91,15 +91,16 @@ Game.prototype.start = function(){
 }
 
 Game.prototype.stop = function(){
-    clearInterval(self.timer);
-    self.setState('timeup');
+    clearInterval(this.timer);
+    this.setState('timeup');
 }
 
 Game.prototype.setupLevel = function(){
     var self    = this;
     var setting = LEVEL_SETTING[this.level];
-    Object.keys(setting).forEach( function(type){
-        for( var i = 0; i < setting[type]; i++ ){
+    console.log(setting.objects);
+    Object.keys(setting.objects).forEach( function(type){
+        for( var i = 0; i < setting.objects[type]; i++ ){
             var obj = new Character(
                 self,
                 type,
@@ -126,4 +127,12 @@ Game.prototype.computeScore = function(){
 
     this.score += score;
     document.getElementById('scoreboard').innerHTML = this.score;
+}
+
+Game.prototype.nextLevel = function(){
+    this.level = this.level + 1;
+    if( this.level > MAX_LEVEL  ){
+        this.level = MAX_LEVEL;
+    }
+    this.setupLevel();
 }

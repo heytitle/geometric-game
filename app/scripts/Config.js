@@ -15,14 +15,19 @@ var DURATION = {
 
 var LEVEL_SETTING = {
     1: {
-        cat: 2,
-        dog: 2
+        objects: {
+            cat: 2,
+            dog: 2
+        }
     },
     2: {
-        cat: 1,
-        dog: 1
+        objects: {
+            cat: 1,
+            dog: 1
+        }
     }
 }
+var MAX_LEVEL = Object.keys(LEVEL_SETTING).splice(-1,1);
 
 var MOVEMENT_CHARACTER = {
     dog: {
