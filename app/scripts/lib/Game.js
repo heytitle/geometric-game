@@ -30,14 +30,14 @@ Game.prototype.initEvents = function(){
             return;
         }else {
             self.sepLine.addClass('show');
-            self.state = STATE.SELECTING;
+            self.setState('selecting');;
             self.sepLine.animate({ opacity:0 }, DURATION.selecting, function(){
                 self.sepLine.removeClass('show');
                 self.sepLine.attr('opacity',1);
-                self.state = STATE.WAITING;
+                self.setState('waiting');
 
                 setTimeout(function(){
-                    self.state = STATE.IDLE;
+                    self.setState('idle');
                 }, DURATION.waiting );
             });
         }
@@ -92,7 +92,7 @@ Game.prototype.start = function(){
 
 Game.prototype.stop = function(){
     clearInterval(self.timer);
-    self.state = state.TIMEUP;
+    self.setState('timeup');
 }
 
 Game.prototype.setupLevel = function(){
@@ -110,6 +110,14 @@ Game.prototype.setupLevel = function(){
         }
     });
 };
+
+Game.prototype.setState = function(state){
+    var k = state.toUpperCase();
+    if( Object.keys(STATE).indexOf(k) == -1 ){
+        throw new Error( "This state doesn't exist : " + k );
+    }
+    this.state = STATE[state.toUpperCase()];
+}
 
 Game.prototype.computeScore = function(){
     /* Compute Here */
