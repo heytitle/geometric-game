@@ -44,32 +44,33 @@ var x0 = 0 ;
 var y0 = 0 ;
 var x1 = 0 ;
 var y1 = 0 ;
-document.onmousedown = function(mouse){
-    started = true;
-    x0 = mouse.clientX;
-    y0 = mouse.clientY;
-}
-document.onmousemove = function(mouse){
-    if (!started) {
-        return;
-    }
-    ctx.clearRect(0,0,WIDTH,HEIGHT);
-    for(var key in enemyList){
-        drawEntity(enemyList[key]);
-    }
-    x1 = mouse.clientX;
-    y1 = mouse.clientY;
-    ctx.beginPath();
-    ctx.moveTo(x0, y0);
-    ctx.lineTo(x1, y1 );
-    ctx.stroke();
-    ctx.closePath();
-}
 
-document.onmouseup = function(mouse){
-    started = false;
-    ctx.save();
-}
+// document.onmousedown = function(mouse){
+//     started = true;
+//     x0 = mouse.clientX;
+//     y0 = mouse.clientY;
+// }
+// document.onmousemove = function(mouse){
+//     if (!started) {
+//         return;
+//     }
+//     ctx.clearRect(0,0,WIDTH,HEIGHT);
+//     for(var key in enemyList){
+//         drawEntity(enemyList[key]);
+//     }
+//     x1 = mouse.clientX;
+//     y1 = mouse.clientY;
+//     ctx.beginPath();
+//     ctx.moveTo(x0, y0);
+//     ctx.lineTo(x1, y1 );
+//     ctx.stroke();
+//     ctx.closePath();
+// }
+
+// document.onmouseup = function(mouse){
+//     started = false;
+//     ctx.save();
+// }
 
 
 
@@ -130,4 +131,4 @@ Enemy('E4',250,200,10,-8,40,10, Img.animal1 );
 Enemy('E5',250,300,10,-8,40,10, Img.animal3 );
 Enemy('E6',100,300,10,-8,40,10, Img.animal2  );
 
-setInterval(update,100);
+// setInterval(update,100);
