@@ -1,13 +1,11 @@
 function Game(){
-    this.state    = STATE.IDLE;
-    this.score    = 0;
-    this.objects  = [];
-    this.duration = DURATION.game;
-    this.level    = 1;
-    this.soundFX  = new SoundFX();
-
+    this.state     = STATE.IDLE;
+    this.score     = 0;
+    this.objects   = [];
+    this.duration  = DURATION.game;
+    this.level     = 1;
+    this.soundFX   = new SoundFX();
     this.prevState = 'idle';
-    this.ended    = false;
 }
 
 Game.prototype.init = function(){
