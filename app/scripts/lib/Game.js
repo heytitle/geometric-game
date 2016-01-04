@@ -109,8 +109,13 @@ Game.prototype.stop = function(){
 }
 
 Game.prototype.setupLevel = function(){
-    var self    = this;
-    var setting = LEVEL_SETTING[this.level];
+    var self  = this;
+    var level = this.level;
+    if( this.level > MAX_LEVEL  ){
+        level = MAX_LEVEL;
+    }
+
+    var setting = LEVEL_SETTING[level];
     console.log(setting.objects);
     Object.keys(setting.objects).forEach( function(type){
         for( var i = 0; i < setting.objects[type]; i++ ){
@@ -142,16 +147,21 @@ Game.prototype.computeScore = function(){
     /* Compute Here */
     var score = 1000;
     /* End compute */
-
     this.score += score;
+
+
+    var nextLevelScore = 1500*Math.pow(this.level,2);
+    if( this.score > nextLevelScore ) {
+        this.nextLevel();
+    } else {
+        console.log("Next Level Score: ", nextLevelScore );
+    }
+
     document.getElementById('scoreboard').innerHTML = this.score;
 }
 
 Game.prototype.nextLevel = function(){
     this.level = this.level + 1;
-    if( this.level > MAX_LEVEL  ){
-        this.level = MAX_LEVEL;
-    }
     this.setupLevel();
 }
 
