@@ -22,8 +22,8 @@ var LEVEL_SETTING = {
     },
     2: {
         objects: {
-            cat: 1,
-            dog: 1
+            cat: 2,
+            dog: 2
         }
     }
 }
