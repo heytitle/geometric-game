@@ -27,6 +27,9 @@ Game.prototype.initEvents = function(){
     /* Separate Line */
     this.board.drag(function(dx,dy,x,y){
         /* Move Event */
+		self.sepLine.dx = dx;
+		self.sepLine.dy = dy;
+
         if(  self.state == STATE.WAITING ) {
             console.log('Please wait a little bit.');
             return;
@@ -144,13 +147,61 @@ Game.prototype.setState = function(state){
 }
 
 Game.prototype.computeScore = function(){
-    /* Compute Here */
-    var score = 1000;
-    /* End compute */
+    var score = BASE_SCORE;
+	var x1 = this.sepLine.originX;
+	var y1 = this.sepLine.originY;
+	var x2 = this.sepLine.dx;
+	var y2 = this.sepLine.dy;
+	
+	//Compute line equation
+	var xDiff = x1 - x2;
+	var a = xDiff == 0 ? 1 : (y1 - y2) / xDiff;
+	var b = xDiff == 0 ? -x1 :  y1 - a * x1;
+
+	//Counting left and right
+	var leftDogObjects = 0;
+	var rightDogObjects = 0;
+	var leftCatObjects = 0;
+	var rightCatObjects = 0;
+
+	for (i = 0; i < this.objects.length; ++i) {
+		var objectX = this.objects[i].attr('x');
+		var objectY = this.objects[i].attr('y');
+
+		var objectPositionToLine = 0;
+		if (xDiff == 0) {
+			objectPositionToLine = objectX - b;
+		} else{
+			objectPositionToLine = objectX * a - objectY + b;
+		}
+
+		console.log("Object type: ", this.objects[i].type);
+
+		if (objectPositionToLine >= 0) {
+			if (this.objects[i].type == 'cat') {
+				rightCatObjects++;
+			} else {
+				rightDogObjects++;
+			}
+		} else {
+			if (this.objects[i].type == 'cat') {
+				rightCatObjects--;
+			} else {
+				rightDogObjects--;
+			}
+		}
+	}
+
+	//Wrong separation results in some penalties
+	var penalty = Math.abs(rightCatObjects - leftCatObjects) 
+		+ Math.abs(rightDogObjects - leftDogObjects);
+
+	score -= penalty;
+	if (score < 0) score = 0;
     this.score += score;
 
+    var nextLevelScore = 15 * Math.pow(this.level, 2);
 
-    var nextLevelScore = 1500*Math.pow(this.level,2);
     if( this.score > nextLevelScore ) {
         this.nextLevel();
     } else {
