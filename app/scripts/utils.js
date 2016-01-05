@@ -8,3 +8,8 @@ function plusOrMinus(){
     }
     return -1;
 }
+
+function checkLeftOrRight(startX, startY, endX, endY, pointX, pointY){
+	return ((endX - startX)*(pointY - startY) 
+			- (endY - startY)*(pointX - startX));
+}

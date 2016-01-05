@@ -147,50 +147,40 @@ Game.prototype.setState = function(state){
 }
 
 Game.prototype.computeScore = function(){
-    var score = BASE_SCORE;
+    var score = this.objects.length;
 	var x1 = this.sepLine.originX;
 	var y1 = this.sepLine.originY;
-	var x2 = this.sepLine.dx;
-	var y2 = this.sepLine.dy;
+	var x2 = x1 + this.sepLine.dx;
+	var y2 = y1 + this.sepLine.dy;
+
+	var baskets = {
+		left: [],
+		right: []
+	}
 	
-	//Compute line equation
-	var xDiff = x1 - x2;
-	var a = xDiff == 0 ? 1 : (y1 - y2) / xDiff;
-	var b = xDiff == 0 ? -x1 :  y1 - a * x1;
+	for (i = 0; i < this.objects.length; ++i) {
+		var object = this.objects[i];
+		var objectX = object.attr('x');
+		var objectY = object.attr('y');
+
+		var key = 'right';
+		var check = checkLeftOrRight(x1, y1, x2, y2, objectX, objectY);
+		if (check > 0) {
+			key = 'left';
+		}
+
+		if (!baskets[key][object.type]) {
+		   	baskets[key][object.type] = 0; 
+		}
+		baskets[key].push(object);
+		baskets[key][object.type]++;
+	}
 
 	//Counting left and right
-	var leftDogObjects = 0;
-	var rightDogObjects = 0;
-	var leftCatObjects = 0;
-	var rightCatObjects = 0;
-
-	for (i = 0; i < this.objects.length; ++i) {
-		var objectX = this.objects[i].attr('x');
-		var objectY = this.objects[i].attr('y');
-
-		var objectPositionToLine = 0;
-		if (xDiff == 0) {
-			objectPositionToLine = objectX - b;
-		} else{
-			objectPositionToLine = objectX * a - objectY + b;
-		}
-
-		console.log("Object type: ", this.objects[i].type);
-
-		if (objectPositionToLine >= 0) {
-			if (this.objects[i].type == 'cat') {
-				rightCatObjects++;
-			} else {
-				rightDogObjects++;
-			}
-		} else {
-			if (this.objects[i].type == 'cat') {
-				rightCatObjects--;
-			} else {
-				rightDogObjects--;
-			}
-		}
-	}
+	var leftDogObjects = !baskets['left']['dog'] ? 0 : baskets['left']['dog'];
+	var rightDogObjects = !baskets['right']['dog'] ? 0 : baskets['right']['dog'];
+	var leftCatObjects = !baskets['left']['cat'] ? 0 : baskets['left']['cat'];
+	var rightCatObjects = !baskets['right']['cat'] ? 0 : baskets['right']['cat'];
 
 	//Wrong separation results in some penalties
 	var penalty = Math.abs(rightCatObjects - leftCatObjects) 
@@ -200,7 +190,7 @@ Game.prototype.computeScore = function(){
 	if (score < 0) score = 0;
     this.score += score;
 
-    var nextLevelScore = 15 * Math.pow(this.level, 2);
+    var nextLevelScore = BASE_SCORE * Math.pow(this.level, 2);
 
     if( this.score > nextLevelScore ) {
         this.nextLevel();
