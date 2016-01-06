@@ -1,2 +1,6 @@
 var game = new Game();
-game.init();
+
+function startGame() {
+    document.getElementById("control-pane").style.display = "none";
+    game.init();
+}

@@ -1,6 +1,8 @@
 // bower:scss
 // endbower
 
+$special-font: 'Lobster', cursive;
+
 body {
   background: #fafafa;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -54,7 +56,7 @@ body {
     opacity: 0.8;
     font-size: 40px;
     vertical-align: 40px;
-    font-family: 'Lobster', cursive;
+    font-family: $special-font;
 
     .div {
         display: inline-block;
@@ -81,5 +83,44 @@ body {
     &.show {
         visibility: visible;
         opacity: 1;
+    }
+}
+
+#control-pane {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 1000;
+    top: 0px;
+    text-align: center;
+
+    .background {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        background-color: black;
+        opacity: 0.8;
+    }
+
+    .menu {
+        position: absolute;
+        top: 0px;
+        height: 100%;
+        width: 100%;
+        display: table;
+        font-family: $special-font;
+        font-size: 50px;
+
+        ul {
+            display: table-cell;
+            vertical-align: middle;
+            position: relative;
+            padding: 0px;
+
+            a {
+                color: white;
+                text-decoration: none;
+            }
+        }
     }
 }
