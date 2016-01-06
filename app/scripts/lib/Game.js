@@ -146,7 +146,7 @@ Game.prototype.setState = function(state){
 }
 
 Game.prototype.computeScore = function(){
-    var score = this.objects.length;
+    var score = this.objects.length / 2;
 	var x1 = this.sepLine.originX;
 	var y1 = this.sepLine.originY;
 	var x2 = x1 + this.sepLine.dx;
@@ -156,8 +156,8 @@ Game.prototype.computeScore = function(){
 		left: [],
 		right: []
 	}
-
-	for (i = 0; i < this.objects.length; ++i) {
+	
+	for (var i = 0; i < this.objects.length; ++i) {
 		var object = this.objects[i];
 		var objectX = object.attr('x');
 		var objectY = object.attr('y');
@@ -176,9 +176,9 @@ Game.prototype.computeScore = function(){
 	}
 
 	//Counting left and right
-	var leftDogObjects = !baskets['left']['dog'] ? 0 : baskets['left']['dog'];
+	var leftDogObjects 	= !baskets['left']['dog'] ? 0 : baskets['left']['dog'];
 	var rightDogObjects = !baskets['right']['dog'] ? 0 : baskets['right']['dog'];
-	var leftCatObjects = !baskets['left']['cat'] ? 0 : baskets['left']['cat'];
+	var leftCatObjects 	= !baskets['left']['cat'] ? 0 : baskets['left']['cat'];
 	var rightCatObjects = !baskets['right']['cat'] ? 0 : baskets['right']['cat'];
 
 	//Wrong separation results in some penalties
