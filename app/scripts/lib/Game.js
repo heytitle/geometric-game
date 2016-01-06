@@ -69,12 +69,11 @@ Game.prototype.initEvents = function(){
     }
 
     /* Capture Key */
-    window.addEventListener("keyup", function(e){
-         if ( !(e.keyCode == "32" && self.state == STATE.SELECTING) || self.state == STATE.TIMEUP ) return;
+    window.addEventListener('mouseup', function(e){
          self.computeScore();
          self.setState('waiting');
          fadeOutLine();
-    }, false);
+    }, false );
 }
 
 Game.prototype.initObjectMovement = function(){
