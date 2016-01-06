@@ -43,5 +43,7 @@ var MOVEMENT_CHARACTER = {
 }
 
 var SOUNDFX = {
-    'addObject': 'https://www.freesound.org/data/previews/21/21389_36084-lq.mp3'
+    'addObject': 'https://www.freesound.org/data/previews/21/21389_36084-lq.mp3',
+    'awesome' : 'https://www.freesound.org/data/previews/187/187925_3140412-lq.mp3',
+    'oh-no': 'http://freesound.org/data/previews/131/131409_2337290-lq.mp3'
 }
