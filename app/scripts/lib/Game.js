@@ -157,7 +157,7 @@ Game.prototype.computeScore = function(){
 		left: [],
 		right: []
 	}
-	
+
 	for (i = 0; i < this.objects.length; ++i) {
 		var object = this.objects[i];
 		var objectX = object.attr('x');
@@ -170,7 +170,7 @@ Game.prototype.computeScore = function(){
 		}
 
 		if (!baskets[key][object.type]) {
-		   	baskets[key][object.type] = 0; 
+		   	baskets[key][object.type] = 0;
 		}
 		baskets[key].push(object);
 		baskets[key][object.type]++;
@@ -183,11 +183,19 @@ Game.prototype.computeScore = function(){
 	var rightCatObjects = !baskets['right']['cat'] ? 0 : baskets['right']['cat'];
 
 	//Wrong separation results in some penalties
-	var penalty = Math.abs(rightCatObjects - leftCatObjects) 
+	var penalty = Math.abs(rightCatObjects - leftCatObjects)
 		+ Math.abs(rightDogObjects - leftDogObjects);
+
+    if( penalty == 0 ) {
+        this.soundFX.play('awesome');
+    }else {
+        this.soundFX.play('oh-no');
+    }
 
 	score -= penalty;
 	if (score < 0) score = 0;
+
+
     this.score += score;
 
     var nextLevelScore = BASE_SCORE * Math.pow(this.level, 2);
