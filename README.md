@@ -1,11 +1,11 @@
 
 ## TODO
-- [] Implement algorithm
-- [] Game Over Screen
-- [] Fix the bug that the player is still able to draw a line after ending.
-- [] Tutorial.
-- [] Share FB score.
-- [] Report
+- [ ] Implement algorithm
+- [ ] Game Over Screen
+- [ ] Fix the bug that the player is still able to draw a line after ending.
+- [ ] Tutorial.
+- [ ] Share FB score.
+- [ ] Report
 
 ## First Time Set up
 1. Install NodeJS
