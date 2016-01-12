@@ -27,8 +27,11 @@ Game.prototype.initEvents = function(){
     /* Separate Line */
     this.board.drag(function(dx,dy,x,y){
         /* Move Event */
+		  console.log( self.state );
 		self.sepLine.dx = dx;
 		self.sepLine.dy = dy;
+		console.log("dx and dy", self.sepLine.dx + " " + self.sepLine.dy);
+
 
         if(  self.state == STATE.WAITING ) {
             console.log('Please wait a little bit.');
@@ -50,10 +53,20 @@ Game.prototype.initEvents = function(){
         self.sepLine.originX = x;
         self.sepLine.originY = y;
     },function(x,y){
-        self.setState('waiting');
+		  if ( Math.abs(self.dx) < 3 || Math.abs(self.dy) < 3 )  
+         {
+	            console.log("small line");
+			if( self.state == STATE.SELECTING ){
+               fadeOutLine();
+                   }
+	             return ;
+            } 
+		self.computeScore();
         if( self.state == STATE.SELECTING ){
             fadeOutLine();
         }
+		self.sepLine.dx = 0;
+		self.sepLine.dy = 0;
     });
 
     function fadeOutLine(){
@@ -68,12 +81,7 @@ Game.prototype.initEvents = function(){
         });
     }
 
-    /* Capture Key */
-    window.addEventListener('mouseup', function(e){
-         self.computeScore();
-         self.setState('waiting');
-         fadeOutLine();
-    }, false );
+  
 }
 
 Game.prototype.initObjectMovement = function(){
@@ -135,6 +143,7 @@ Game.prototype.setupLevel = function(){
 
 Game.prototype.setState = function(state){
     var k = state.toUpperCase();
+	console.log( k);
     if( Object.keys(STATE).indexOf(k) == -1 ){
         throw new Error( "This state doesn't exist : " + k );
     }
@@ -146,12 +155,13 @@ Game.prototype.setState = function(state){
 }
 
 Game.prototype.computeScore = function(){
+	console.log("scoringgg")
     var score = this.objects.length / 2;
 	var x1 = this.sepLine.originX;
 	var y1 = this.sepLine.originY;
 	var x2 = x1 + this.sepLine.dx;
 	var y2 = y1 + this.sepLine.dy;
-
+   
 	var baskets = {
 		left: [],
 		right: []
