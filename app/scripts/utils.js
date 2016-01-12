@@ -10,6 +10,20 @@ function plusOrMinus(){
 }
 
 function checkLeftOrRight(startX, startY, endX, endY, pointX, pointY){
-	return ((endX - startX)*(pointY - startY) 
+	return ((endX - startX)*(pointY - startY)
 			- (endY - startY)*(pointX - startX));
+}
+
+function setTextForDOM( id, text ){
+    document.getElementById(id).innerHTML = text;
+}
+
+function hideDOM(id) {
+    console.log(id);
+    document.getElementById(id).style.display = "none";
+}
+
+function showDOM(id, style) {
+    style = style || 'block';
+    document.getElementById(id).style.display = style;
 }

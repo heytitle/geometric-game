@@ -110,16 +110,26 @@ body {
         display: table;
         font-family: $special-font;
         font-size: 50px;
+        cursor: default;
+
+        &.end {
+            display: none;
+        }
 
         ul {
             display: table-cell;
             vertical-align: middle;
             position: relative;
             padding: 0px;
+            color: white;
 
             a {
                 color: white;
                 text-decoration: none;
+            }
+
+            #play-again {
+                font-size: 30px;
             }
         }
     }
