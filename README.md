@@ -20,5 +20,8 @@ gulp serve
 
 # Deploy
 gulp deploy
+
+# Test
+mocha  <filename>
 ```
 
