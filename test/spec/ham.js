@@ -20,7 +20,7 @@ describe('findMedian', function () {
             ham.findMedian(lines),
             [
                 new Point( Number.MIN_SAFE_INTEGER, 0 ),
-                new Point( 0, 0  ),
+                new Point( 0, 0 ),
                 new Point( 1, 1 ),
                 new Point( 2, 0 ),
                 new Point( Number.MAX_SAFE_INTEGER, 0 )
