@@ -40,3 +40,21 @@ Line.prototype.isPointAbove = function( point ){
 
     return point.y >= this.findPointOnLine( point.x ).y;
 }
+
+Line.prototype.intersectWithLine = function( line ) {
+    if( this.m == line.m ) { return null }
+
+    var x;
+    if( this.m == Infinity || line.m == Infinity ) {
+        if( this.m == Infinity ) {
+            x = this.originPoint.x;
+        }else {
+            x = line.originPoint.x;
+        }
+    }else {
+        x = ( this.c - line.c ) / ( line.m - this.m );
+    };
+
+    var y = this.m * x + this.c;
+    return new Point( x, y );
+}

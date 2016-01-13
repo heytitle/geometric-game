@@ -39,4 +39,30 @@ describe('Line', function(){
         assert.ok( !l.isPointAbove( new Point( 10, 3 ) ), 'Point is below the line.' );
     });
 
+
+    describe('line intersection', function(){
+        var l1 = new Line( 1, 1, new Point( 0, 1 ) );
+        var l2 = new Line( 1, 2, new Point( 0, 0 ) );
+
+        it('different slope', function(){
+            var p = l1.intersectWithLine(l2);
+            assert.equal( p.x, 1 );
+            assert.equal( p.y, 2 );
+        });
+
+        it('same slope', function(){
+            var l3 = new Line( 1, 1, new Point( 0, 3 ) );
+            var p = l1.intersectWithLine( l3 );
+            assert.ok( !p, 'No intersection point' );
+        });
+
+        it('intersect with vertical line', function(){
+            var l4 = new Line( 0, 5, new Point(5,10) );
+
+            var p = l1.intersectWithLine(l4);
+            assert.equal( p.x, 5 );
+            assert.equal( p.y, 6 );
+        });
+    });
+
 });
