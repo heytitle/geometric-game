@@ -11,6 +11,21 @@ describe('Point', function () {
         assert.equal(p.x, 10 );
         assert.equal(p.y, 20 );
     });
+
+    it('duality', function(){
+        var p = new Point(2,5);
+        var l = p.duality();
+
+        assert.equal( l.m, 2 );
+        assert.equal( l.c, 5 );
+        assert.equal( l.originPoint.y, 5 );
+    });
+
+    it('distanceFromPoint', function(){
+        var p = new Point(3,4);
+        var origin = new Point(0,0);
+        assert.equal( p.distanceFromPoint(origin), 5 );
+    });
 });
 
 describe('Line', function(){

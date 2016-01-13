@@ -1,6 +1,32 @@
 function Point(x,y) {
     this.x = x;
     this.y = y;
+
+}
+
+Point.prototype.duality = function(){
+    var line = new Line( 1, this.x, new Point(0, -this.y) );
+    return line;
+}
+
+Point.prototype.distanceFromPoint = function( point ) {
+    var deltaX = this.x - point.x;
+    var deltaY = this.y - point.y;
+    return Math.sqrt( Math.pow(deltaX, 2) + Math.pow(deltaY,2 ) );
+}
+
+Point.prototype.distanceFromOrigin = function(){
+    return this.distanceFromPoint( new Point(0,0) );
+}
+
+Point.prototype.inBoundary = function( x1, y1, x2, y2 ) {
+    if( this.x >= x1 && this.x <= x2
+     && this.y >= y1 && this.y <= y2
+    ){
+        return true;
+    }
+    return false;
+
 }
 
 function Line( dx, dy, point ){
