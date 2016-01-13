@@ -4,7 +4,7 @@ function HamSandwich(set1, set2) {
 }
 
 HamSandwich.prototype.findMedian = function(lines) {
-	events = [new Point(Number.MIN_VALUE, Number.MIN_VALUE)];
+	events = [new Point(Number.MIN_SAFE_INTEGER, 0)];
 	for (i = 0; i < lines.length - 1; i++) {
 		for (j = i + 1; j < lines.length; j++) {
             var point = lines[i].intersectWithLine( lines[j] );
@@ -13,13 +13,20 @@ HamSandwich.prototype.findMedian = function(lines) {
 	}
 
 	pointCompare = function(p1, p2) {
-		return p1.x - p2.x;
+        if( p1.x > p2.x ) {
+            return 1;
+        }
+        if( p1.x< p2.x ) {
+            return -1;
+        }
+        return 0;
 	};
 
 	events.sort(pointCompare);
 
 	var medianLines = [];
 	var medianPoints = [];
+    var lastMedianLine;
 	for ( var i = 0; i < events.length; i++) {
         var p = events[i];
 		var intersections = [];
@@ -30,29 +37,27 @@ HamSandwich.prototype.findMedian = function(lines) {
 			intersections.push(new Point(p.x, intersectionY));
 		}
 
-		intersections.sort(pointCompare);
-		median = intersections[Math.round(intersections.length / 2)];
+		intersections.sort(function(p1,p2){
+            return p1.y - p2.y;
+        });
+		median = intersections[Math.floor(intersections.length / 2)];
 
         for( var j = 0; j < lines.length; j++ ) {
             var line = lines[j];
 			if (line.isPointOnLine(median)) {
-				if (medianLines.length == 0) {
-					x = Number.MIN_VALUE;
-					y = line.m * x + line.c;
-					medianPoints.push(new Point(x, y));
-				}
-
 				medianLines.push(line);
 			}
 		}
 
 		if (medianLines[medianLines.length - 1].isPointOnLine(p)) {
 			medianPoints.push(p);
+            if( medianPoints.length == 1 ) {
+                lastMedianLine = medianLines[0];
+            }
 		}
 	}
 
-	lastMedianLine = medianLines[medianLines.length - 1];
-	lastX = Number.MAX_VALUE - 1000;
+	lastX = Number.MAX_SAFE_INTEGER;
 	lastY = lastMedianLine.m * lastX + lastMedianLine.c;
 	medianPoints.push(new Point(lastX, lastY));
 	return medianPoints;
