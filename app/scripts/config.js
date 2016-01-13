@@ -12,7 +12,7 @@ var STATE = {
 var DURATION = {
     selecting: 1000,
     waiting: 1000,
-    game: 180
+    game: 60
 }
 
 var LEVEL_SETTING = {

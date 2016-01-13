@@ -1,25 +1,41 @@
 function Game(){
-    this.state     = STATE.IDLE;
-    this.score     = 0;
-    this.objects   = [];
-    this.duration  = DURATION.game;
-    this.level     = 1;
     this.soundFX   = new SoundFX();
-    this.prevState = 'idle';
-}
-
-Game.prototype.init = function(){
     this.board   = Snap(IDCANVAS);
     this.sepLine = this.board.line(0,0,0,600);
     this.sepLine.addClass('separate-line');
-    document.getElementById('time').innerHTML = this.duration;
+}
+
+Game.prototype.init = function(){
+    this.setupEnvironment();
+
 
     this.initEvents();
 
     this.setupLevel();
     this.initObjectMovement();
 
+    document.getElementById('time').innerHTML = this.duration;
+
     this.start();
+}
+
+Game.prototype.replay = function(){
+    for( var i = 0; i < this.objects.length; i++ ){
+        this.objects[i].remove();
+    }
+
+    this.init();
+}
+
+Game.prototype.setupEnvironment = function(){
+    this.duration  = DURATION.game;
+    this.state     = STATE.IDLE;
+    this.score     = 0;
+    this.objects   = [];
+    this.level     = 1;
+    this.prevState = 'idle';
+
+    setTextForDOM('scoreboard', this.score );
 }
 
 Game.prototype.initEvents = function(){
@@ -86,11 +102,12 @@ Game.prototype.initEvents = function(){
 
 Game.prototype.initObjectMovement = function(){
     var self = this;
-    setInterval(function(){
+    this.movement_timer = setInterval(function(){
         var speedRatio = 0.5;
         if( self.state == STATE.SELECTING ) {
             speedRatio = 0.02;
         }
+
         for( var i = 0; i< self.objects.length; i++ ){
             self.objects[i].move(
                 self.board.node.offsetWidth,
@@ -114,8 +131,14 @@ Game.prototype.start = function(){
 
 Game.prototype.stop = function(){
     clearInterval(this.timer);
+    clearInterval(this.movement_timer);
+
     this.setState('timeup');
-    this.board.undrag();
+    // this.board.undrag();
+
+    setTextForDOM('final-score', this.score );
+
+    showDOM('control-pane');
 }
 
 Game.prototype.setupLevel = function(){
@@ -166,7 +189,7 @@ Game.prototype.computeScore = function(){
 		left: [],
 		right: []
 	}
-	
+
 	for (var i = 0; i < this.objects.length; ++i) {
 		var object = this.objects[i];
 		var objectX = object.attr('x');

@@ -1,6 +1,13 @@
 var game = new Game();
 
 function startGame() {
-    document.getElementById("control-pane").style.display = "none";
+    hideDOM('control-pane');
+    hideDOM('start-pane');
+    showDOM('end-pane','table');
     game.init();
+}
+
+function replay() {
+    hideDOM('control-pane');
+    game.replay();
 }

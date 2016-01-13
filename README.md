@@ -1,7 +1,7 @@
 
 ## TODO
 - [ ] Implement algorithm
-- [ ] Game Over Screen
+- [x] Game Over Screen
 - [ ] Fix the bug that the player is still able to draw a line after ending.
 - [ ] Tutorial.
 - [ ] Share FB score.
