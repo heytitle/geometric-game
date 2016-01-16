@@ -4,6 +4,8 @@ var BASE_SCORE = 10;
 var SPECIAL_ITEMS_TRADE = 3;
 var DIAMOND_MULTIPIER = 10;
 
+var DRAG_OPACITY = 0.5;
+
 var STATE = {
     IDLE: 0,
     SELECTING: 1,

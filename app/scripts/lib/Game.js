@@ -3,6 +3,12 @@ function Game(){
     this.board   = Snap(IDCANVAS);
     this.sepLine = this.board.line(0,0,0,600);
     this.sepLine.addClass('separate-line');
+    this.sepLine.attr('opacity', DRAG_OPACITY );
+
+    this.mouseOriginPointer = this.board.circle( -100, -100, 10 );
+    this.mouseOriginPointer.addClass('mouse-origin-pointer');
+    this.mouseOriginPointer.attr('opacity', DRAG_OPACITY );
+
 }
 
 Game.prototype.init = function(){
@@ -49,7 +55,6 @@ Game.prototype.initEvents = function(){
             return;
         }
         /* Move Event */
-		  console.log( self.state );
 		self.sepLine.dx = dx;
 		self.sepLine.dy = dy;
 		console.log("dx and dy", self.sepLine.dx + " " + self.sepLine.dy);
@@ -75,6 +80,10 @@ Game.prototype.initEvents = function(){
         if( event.button == 2 ) {
             return;
         }
+
+        self.mouseOriginPointer.attr('cx', x );
+        self.mouseOriginPointer.attr('cy', y );
+        self.mouseOriginPointer.addClass('show');
 
         if( self.state == STATE.waiting || self.state == STATE.TIMEUP ) return;
         self.sepLine.originX = x;
@@ -106,9 +115,13 @@ Game.prototype.initEvents = function(){
     });
 
     function fadeOutLine(){
+        self.mouseOriginPointer.animate({ opacity:0 }, DURATION.selecting, function(){
+            this.attr('opacity', DRAG_OPACITY );
+            this.removeClass('show');
+        });
         self.sepLine.animate({ opacity:0 }, DURATION.selecting, function(){
-            self.sepLine.removeClass('show');
-            self.sepLine.attr('opacity',1);
+            this.removeClass('show');
+            this.attr('opacity', DRAG_OPACITY );
             self.setState('waiting');
 
             setTimeout(function(){

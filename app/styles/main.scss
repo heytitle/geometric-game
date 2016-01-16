@@ -44,7 +44,7 @@ body {
     border: 1px solid;
 
     &.waiting {
-        cursor: wait;
+        //cursor: wait;
     }
 
 }
@@ -85,15 +85,20 @@ body {
 
 .separate-line {
     stroke: black;
-    stroke-width: 5px;
+    stroke-width: 2.5px;
 
     visibility: hidden;
     opacity: 0;
 
-    &.show {
-        visibility: visible;
-        opacity: 1;
-    }
+}
+
+.show {
+    visibility: visible !important;
+    opacity: 1;
+}
+
+.mouse-origin-pointer {
+    visibility: hidden;
 }
 
 #control-pane {
