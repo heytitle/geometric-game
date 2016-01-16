@@ -28,3 +28,34 @@ describe('findMedian', function () {
         );
     });
 });
+
+describe('findMedian', function () {
+    it('',function(){
+        var ham = new HamSandwich();
+        var lines = [
+		    new Line(1,1, new Point(-2, 0) ),
+			new Line(1,-1, new Point(4, 0) ),
+            new Line(1,0, new Point(0, 0) ),
+            new Line(1,1, new Point(0, 0) ),
+            new Line(1,-1, new Point(0,2) )
+        ];
+
+        assert.deepEqual(
+            ham.findMedian(lines),
+            [
+                new Point( Number.MIN_SAFE_INTEGER, 0 ),
+				new Point( -2, 0 ),
+                new Point( 0, 0 ),
+				new Point( 0, 2 ),
+                new Point( 1, 1 ),
+				new Point( 1, 3 ),
+                new Point( 2, 0 ),
+				new Point( 2, 2 ),
+			    new Point( 4, 0),
+                new Point( Number.MAX_SAFE_INTEGER, 0 )
+            ]
+        );
+    });
+});
+
+
