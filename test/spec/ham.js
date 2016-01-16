@@ -29,27 +29,27 @@ describe('findMedian', function () {
     });
 });
 
-//describe('findIntersection', function () {
-//    it('',function(){
-//        var ham = new HamSandwich();
-//        var pointList1 = [
-//			new Point(0, 0),
-//			new Point(1, 2),
-//			new Point(2, 2),
-//			new Point(3, 4)
-//        ];
-//		
-//        var pointList2 = [
-//			new Point(0, 5),
-//			new Point(1, 3),
-//			new Point(2, 1),
-//			new Point(3, 0)
-//        ];
-//
-//        assert.deepEqual(
-//            ham.findMedian(pointList1, pointList2),
-//			new Point(1.5, 2)
-//        );
-//    });
-//});
+describe('findIntersection', function () {
+    it('',function(){
+        var ham = new HamSandwich();
+        var pointList1 = [
+			new Point(0, 0),
+			new Point(1, 2),
+			new Point(2, 2),
+			new Point(3, 4)
+        ];
+		
+        var pointList2 = [
+			new Point(0, 5),
+			new Point(1, 3),
+			new Point(2, 1),
+			new Point(3, 0)
+        ];
+
+        assert.deepEqual(
+            ham.findIntersection(pointList1, pointList2),
+			new Point(1.5, 2)
+        );
+    });
+});
 

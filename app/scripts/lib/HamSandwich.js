@@ -2,9 +2,7 @@ MIN_NUMBER = -65000;
 MAX_NUMBER = 65000;
 
 function HamSandwich(set1, set2) {
-	this.set1 = set1;
-	this.set2 = set2;
-}
+	this.set1 = set1; this.set2 = set2; }
 
 HamSandwich.prototype.findMedian = function(lines) {
 	events = [new Point(MIN_NUMBER, 0)];
@@ -73,15 +71,20 @@ HamSandwich.prototype.findIntersection = function(pointList1, pointList2) {
 	while (index1 < pointList1.length - 1 && index2 < pointList2.length - 1) {
 		startPoint1 = pointList1[index1];
 		endPoint1 = pointList1[index1 + 1];
-		startPoint2 = pointList1[index2];
-		endPoint2 = pointList1[index2 + 1];
+		startPoint2 = pointList2[index2];
+		endPoint2 = pointList2[index2 + 1];
 
 		line1 = new Line(endPoint1.x - startPoint1.x, endPoint1.y - startPoint1.y, startPoint1);
-		line2 = new Line(endPoint2.x - startPoint2.x, endPoint2.y - startPoint2.y, startPoint1);
+		line2 = new Line(endPoint2.x - startPoint2.x, endPoint2.y - startPoint2.y, startPoint2);
 
 		intersection = line1.intersectWithLine(line2);
-		if ((intersection.x - startPoint1.x) * (intersection.x - endPoint1.x) <= 0
+
+		if (intersection != null
+				&& (intersection.x - startPoint1.x) * (intersection.x - endPoint1.x) <= 0
 				&& (intersection.y - startPoint2.y) * (intersection.y - endPoint2.y) <= 0) {
+			console.log(line1);
+			console.log(line2);
+
 			return intersection;
 		}
 
