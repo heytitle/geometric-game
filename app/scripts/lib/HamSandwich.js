@@ -1,10 +1,13 @@
+MIN_NUMBER = -65000;
+MAX_NUMBER = 65000;
+
 function HamSandwich(set1, set2) {
 	this.set1 = set1;
 	this.set2 = set2;
 }
 
 HamSandwich.prototype.findMedian = function(lines) {
-	events = [new Point(Number.MIN_SAFE_INTEGER, 0)];
+	events = [new Point(MIN_NUMBER, 0)];
 	for (i = 0; i < lines.length - 1; i++) {
 		for (j = i + 1; j < lines.length; j++) {
             var point = lines[i].intersectWithLine( lines[j] );
@@ -57,7 +60,7 @@ HamSandwich.prototype.findMedian = function(lines) {
 		}
 	}
 
-	lastX = Number.MAX_SAFE_INTEGER;
+	lastX = MAX_NUMBER;
 	lastY = lastMedianLine.m * lastX + lastMedianLine.c;
 	medianPoints.push(new Point(lastX, lastY));
 	return medianPoints;
