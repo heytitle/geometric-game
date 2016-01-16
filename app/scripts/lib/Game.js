@@ -36,8 +36,8 @@ Game.prototype.setupEnvironment = function(){
     this.prevState = 'idle';
     this.diamond   = 0;
 
-    setTextForDOM('scoreboard', this.score );
-    setTextForDOM('special-item', this.diamond );
+    $('#scoreboard').text(this.score);
+    $('#special-item').text(this.diamond);
 }
 
 Game.prototype.initEvents = function(){
@@ -157,7 +157,7 @@ Game.prototype.stop = function(){
     // this.board.undrag();
 
     var finalScore = this.score + DIAMOND_MULTIPIER * this.diamond;
-    setTextForDOM('final-score', finalScore );
+    $('#final-score').text(finalScore);
 
     showDOM('control-pane');
 }
