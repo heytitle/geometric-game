@@ -34,14 +34,20 @@ Game.prototype.setupEnvironment = function(){
     this.objects   = [];
     this.level     = 1;
     this.prevState = 'idle';
+    this.diamond   = 0;
 
     setTextForDOM('scoreboard', this.score );
+    setTextForDOM('special-item', this.diamond );
 }
 
 Game.prototype.initEvents = function(){
     var self = this;
     /* Separate Line */
-    this.board.drag(function(dx,dy,x,y){
+    this.board.drag(function(dx,dy,x,y, event ){
+        /* Ignore right click */
+        if( event.button == 2 ) {
+            return;
+        }
         /* Move Event */
 		  console.log( self.state );
 		self.sepLine.dx = dx;
@@ -64,25 +70,39 @@ Game.prototype.initEvents = function(){
             endpoints[i] = (dx/dy)*(endpoints[i]-self.sepLine.originY)+self.sepLine.originX;
             self.sepLine.attr(attrKey, endpoints[i]);
         }
-    },function(x,y){
+    },function(x,y, event ){
+        /* Ignore right click */
+        if( event.button == 2 ) {
+            return;
+        }
+
         if( self.state == STATE.waiting || self.state == STATE.TIMEUP ) return;
         self.sepLine.originX = x;
         self.sepLine.originY = y;
     },function(x,y){
-		  if ( Math.abs(self.dx) < 3 || Math.abs(self.dy) < 3 )  
-         {
-	            console.log("small line");
-			if( self.state == STATE.SELECTING ){
-               fadeOutLine();
-                   }
-	             return ;
-            } 
+        /* Ignore right click */
+        if( event.button == 2 ) {
+            return;
+        }
+
+        if ( Math.abs(self.dx) < 3 || Math.abs(self.dy) < 3 ) {
+            console.log("small line");
+            if( self.state == STATE.SELECTING ){
+                fadeOutLine();
+            }
+            return ;
+        }
 		self.computeScore();
         if( self.state == STATE.SELECTING ){
             fadeOutLine();
         }
 		self.sepLine.dx = 0;
 		self.sepLine.dy = 0;
+    });
+
+    $(IDCANVAS).bind("contextmenu",function(e){
+       self.useSpecialItem();
+       return false;
     });
 
     function fadeOutLine(){
@@ -97,7 +117,7 @@ Game.prototype.initEvents = function(){
         });
     }
 
-  
+
 }
 
 Game.prototype.initObjectMovement = function(){
@@ -136,7 +156,8 @@ Game.prototype.stop = function(){
     this.setState('timeup');
     // this.board.undrag();
 
-    setTextForDOM('final-score', this.score );
+    var finalScore = this.score + DIAMOND_MULTIPIER * this.diamond;
+    setTextForDOM('final-score', finalScore );
 
     showDOM('control-pane');
 }
@@ -184,7 +205,7 @@ Game.prototype.computeScore = function(){
 	var y1 = this.sepLine.originY;
 	var x2 = x1 + this.sepLine.dx;
 	var y2 = y1 + this.sepLine.dy;
-   
+
 	var baskets = {
 		left: [],
 		right: []
@@ -219,7 +240,7 @@ Game.prototype.computeScore = function(){
 		+ Math.abs(rightDogObjects - leftDogObjects);
 
     if( penalty == 0 ) {
-        this.soundFX.play('awesome');
+        this.awesome();
     }else {
         this.soundFX.play('oh-no');
     }
@@ -246,5 +267,35 @@ Game.prototype.nextLevel = function(){
     this.setupLevel();
 }
 
-Game.prototype.loadSound = function(){
+Game.prototype.awesome = function(){
+    this.diamond = this.diamond + 1;
+    this.soundFX.play('awesome');
+    this._animateSpecial( '+', 1 );
 }
+
+Game.prototype._animateSpecial = function( sign, number ){
+    var self = this;
+    $('#special-animation').text( sign + number );
+    $('#special-animation').show();
+    $('#special-animation').fadeOut(function(){
+        $('#special-item').text(  self.diamond );
+    });
+}
+
+Game.prototype.useSpecialItem = function(){
+    if( this.diamond >= SPECIAL_ITEMS_TRADE ) {
+        this.diamond = this.diamond - SPECIAL_ITEMS_TRADE;
+        this._animateSpecial( '-', SPECIAL_ITEMS_TRADE );
+        /* Integrate with Geo.js */
+
+        console.log('Use item!');
+    }else {
+        // Blink the item
+        $("#special-item-wrapper").animate({opacity:0},200,"linear",function(){
+            $(this).animate({opacity:1},200);
+        });
+        this.soundFX.play('error');
+    }
+}
+
+

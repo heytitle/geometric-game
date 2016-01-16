@@ -46,6 +46,7 @@ body {
     &.waiting {
         cursor: wait;
     }
+
 }
 
 #status-bar{
@@ -65,6 +66,15 @@ body {
     #score {
         margin-left: 10px;
         float: left;
+
+        #special-item-wrapper {
+            font-size: 15px;
+            margin-left: 10px;
+
+            #special-animation {
+                display: none;
+            }
+        }
     }
     #time {
         margin-right: 10px;
