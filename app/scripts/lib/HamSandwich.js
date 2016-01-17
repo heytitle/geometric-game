@@ -5,7 +5,19 @@ function HamSandwich(set1, set2) {
 	this.set1 = set1; this.set2 = set2; }
 
 HamSandwich.prototype.findMedian = function(lines) {
-	events = [new Point(MIN_NUMBER, 0)];
+    /* Find 1st point */
+    var firstPointCandidates = [];
+    for( var i = 0; i < lines.length; i++ ) {
+        var p = lines[i].findPointOnLine( MIN_NUMBER );
+        firstPointCandidates.push(p);
+    }
+
+    firstPointCandidates.sort(this.sortPointBy('y'));
+
+    var firstPoint = firstPointCandidates[Math.floor(lines.length/2)];
+    /* End */
+
+	events = [firstPoint];
 	for (i = 0; i < lines.length - 1; i++) {
 		for (j = i + 1; j < lines.length; j++) {
             var point = lines[i].intersectWithLine( lines[j] );
@@ -13,17 +25,7 @@ HamSandwich.prototype.findMedian = function(lines) {
 		}
 	}
 
-	pointCompare = function(p1, p2) {
-        if( p1.x > p2.x ) {
-            return 1;
-        }
-        if( p1.x< p2.x ) {
-            return -1;
-        }
-        return 0;
-	};
-
-	events.sort(pointCompare);
+	events.sort(this.sortPointBy('x'));
 
 	var medianLines = [];
 	var medianPoints = [];
@@ -34,13 +36,12 @@ HamSandwich.prototype.findMedian = function(lines) {
 
         for( var j = 0; j < lines.length; j++ ) {
             var line = lines[j];
-			intersectionY = line.m * p.x + line.c;
-			intersections.push(new Point(p.x, intersectionY));
+			var intersectPoint = line.findPointOnLine(p.x);
+			intersections.push(intersectPoint);
 		}
 
-		intersections.sort(function(p1,p2){
-            return p1.y - p2.y;
-        });
+		intersections.sort(this.sortPointBy('y'));
+
 		median = intersections[Math.floor(intersections.length / 2)];
 
         for( var j = 0; j < lines.length; j++ ) {
@@ -58,9 +59,8 @@ HamSandwich.prototype.findMedian = function(lines) {
 		}
 	}
 
-	lastX = MAX_NUMBER;
-	lastY = lastMedianLine.m * lastX + lastMedianLine.c;
-	medianPoints.push(new Point(lastX, lastY));
+    var lastPoint = medianLines[0].findPointOnLine( MAX_NUMBER );
+	medianPoints.push(lastPoint);
 	return medianPoints;
 }
 
@@ -82,8 +82,6 @@ HamSandwich.prototype.findIntersection = function(pointList1, pointList2) {
 		if (intersection != null
 				&& (intersection.x - startPoint1.x) * (intersection.x - endPoint1.x) <= 0
 				&& (intersection.y - startPoint2.y) * (intersection.y - endPoint2.y) <= 0) {
-			console.log(line1);
-			console.log(line2);
 
 			return intersection;
 		}
@@ -93,7 +91,13 @@ HamSandwich.prototype.findIntersection = function(pointList1, pointList2) {
 		} else {
 			index1++;
 		}
-	}	
+	}
 
 	return undefined;
 }
+
+HamSandwich.prototype.sortPointBy = function( by ) {
+    return function( p1, p2 ) {
+        return p1[by] - p2[by];
+    }
+};

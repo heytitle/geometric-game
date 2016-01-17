@@ -27,6 +27,26 @@ describe('findMedian', function () {
             ]
         );
     });
+
+    it('no line at x axis',function(){
+        var ham = new HamSandwich();
+        var lines = [
+            new Line(1,0, new Point(0, 5) ),
+            new Line(1,1, new Point(0, 0) ),
+            new Line(1,-1, new Point(0,2) )
+        ];
+
+        assert.deepEqual(
+            ham.findMedian(lines),
+            [
+                new Point( MIN_NUMBER, 5 ),
+                new Point( -3, 5 ),
+                new Point( 1, 1 ),
+                new Point( 5, 5 ),
+                new Point( MAX_NUMBER, 5 )
+            ]
+        );
+    });
 });
 
 describe('findIntersection', function () {
@@ -38,7 +58,7 @@ describe('findIntersection', function () {
 			new Point(2, 2),
 			new Point(3, 4)
         ];
-		
+
         var pointList2 = [
 			new Point(0, 5),
 			new Point(1, 3),
