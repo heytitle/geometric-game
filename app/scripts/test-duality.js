@@ -1,4 +1,3 @@
-console.log('xxx');
 var RADIUS = 5;
 var STOKE_WITDH=5;
 var SCALING = 30;
@@ -11,6 +10,49 @@ var WIDTH  = normalPane.node.offsetWidth;
 
 var SCALED_HEIGHT = HEIGHT/SCALING;
 var SCALED_WIDTH = WIDTH/SCALING;
+
+var ham = new HamSandwich();
+
+var medianLines = [[],[]];
+
+var toggle = {};
+
+$(document).ready(function(){
+    $("#show-median").click(function(){
+        var points = [[],[]];
+        for( var i = 0; i < 2; i++ ){
+            var medianPoints = ham.findMedian( medianLines[i] );
+            points[i] = medianPoints;
+            for( var j = 0; j < medianPoints.length; j++ ){
+                var p = medianPoints[j];
+                p = convertPointToCanvasCoordinate(p);
+                var circle = dualPane.circle( p.x, p.y, RADIUS );
+                circle.attr({fill:  COLOR_PROFILE[i] });
+                circle.addClass('color-'+i);
+            }
+        }
+
+        var point = ham.findIntersection(points[0], points[1]);
+        var canvasPoints = intersectWithBoundary(point.duality());
+        var line = normalPane.line(
+            canvasPoints[0].x,
+            canvasPoints[0].y,
+            canvasPoints[1].x,
+            canvasPoints[1].y
+        );
+        line.attr({ stroke: '#000' } );
+    });
+
+    $(".toggle-button").click(function(){
+        var id = $(this).attr('id');
+        if( !toggle[id] ) {
+            $("."+id).hide();
+        }else {
+            $("."+id).show();
+        }
+        toggle[id] = !toggle[id];
+    });
+});
 
 var papers = [ normalPane, dualPane ];
 for( var i = 0; i < papers.length; i++ ) {
@@ -47,27 +89,10 @@ normalPane.click(function(e){
     circle.attr({fill:  c });
     /* Draw a Line on dualPane that intersected with 2 edges of dualPane boudary*/
     var dualLine = point.duality();
-    // dualLine.m = dualLine.m/10;
-    // dualLine.c = dualLine.c/10;
-    var intersect = [];
-    console.log(point);
-    console.log(dualLine);
-    for( var l=0; l < boundaries.length; l++ ) {
-        var line = boundaries[l];
-        var p = dualLine.intersectWithLine(line);
-        if( p.inBoundary( -SCALED_WIDTH/2,-SCALED_HEIGHT/2, SCALED_WIDTH/2, SCALED_HEIGHT/2 ) ) {
-            intersect.push(p);
-        }
-    }
-    // }
-    console.log(intersect);
-    for( var i = 0; i < 2; i++ ){
-        intersect[i].x = SCALING*( intersect[i].x + SCALED_WIDTH/2 );
-        intersect[i].y = SCALING*( SCALED_HEIGHT/2 - intersect[i].y  );
-    }
 
-    // console.log(intersect);
+    medianLines[color].push( dualLine );
 
+    var intersect = intersectWithBoundary(dualLine);
     line = dualPane.line(
         intersect[0].x,
         intersect[0].y,
@@ -75,15 +100,32 @@ normalPane.click(function(e){
         intersect[1].y
     );
     line.attr({ stroke: c } );
+    line.addClass('color-'+color);
 
     circle.hover(function(){
         line.attr({strokeWidth:3});
     },function(){
         line.attr({strokeWidth:1});
     });
-    /* End Line Drawing */
-    //normalPane.node.offsetWidth;
 
+    /* End Line Drawing */
     color = ( color + 1 ) % 2;
 });
 
+function intersectWithBoundary(line) {
+    var intersect = [];
+    for( var l=0; l < boundaries.length; l++ ) {
+        var edge = boundaries[l];
+        var p = line.intersectWithLine(edge);
+        if( p.inBoundary( -SCALED_WIDTH/2 ,-SCALED_HEIGHT/2 , SCALED_WIDTH/2 , SCALED_HEIGHT/2) ) {
+            intersect.push( convertPointToCanvasCoordinate(p) );
+        }
+    }
+    return intersect;
+}
+
+function convertPointToCanvasCoordinate( p ) {
+    var x = SCALING*( p.x + SCALED_WIDTH/2 );
+    var y = SCALING*( SCALED_HEIGHT/2 - p.y  );
+    return new Point(x,y);
+}
