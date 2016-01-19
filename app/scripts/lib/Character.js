@@ -50,3 +50,7 @@ function Character( game, name,x,y ){
 
     return obj;
 }
+
+Character.prototype.point = function(){
+    return new Point(  obj.attr('x'), obj.attr('y') )
+}

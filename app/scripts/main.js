@@ -1,13 +1,13 @@
 var game = new Game();
 
 function startGame() {
-    hideDOM('control-pane');
-    hideDOM('start-pane');
-    showDOM('end-pane','table');
+    $('#control-pane').hide();
+    $('#start-pane').hide();
+    $('#end-pane').show();
     game.init();
 }
 
 function replay() {
-    hideDOM('control-pane');
+    $('#control-pane').hide();
     game.replay();
 }

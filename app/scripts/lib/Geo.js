@@ -1,3 +1,5 @@
+var ACCEPTABLE_ERROR = 0.001;
+
 function Point(x,y) {
     this.x = x;
     this.y = y;
@@ -20,8 +22,11 @@ Point.prototype.distanceFromOrigin = function(){
 }
 
 Point.prototype.inBoundary = function( x1, y1, x2, y2 ) {
-    if( this.x >= x1 && this.x <= x2
-     && this.y >= y1 && this.y <= y2
+    /* Padding with 0.1 prevent floating point error ) */
+    if(   this.x >= ( x1 - ACCEPTABLE_ERROR )
+       && this.x <= ( x2 + ACCEPTABLE_ERROR )
+       && this.y >= ( y1 - ACCEPTABLE_ERROR )
+       && this.y <= ( y2 + ACCEPTABLE_ERROR )
     ){
         return true;
     }

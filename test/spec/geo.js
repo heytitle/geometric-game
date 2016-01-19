@@ -17,14 +17,40 @@ describe('Point', function () {
         var l = p.duality();
 
         assert.equal( l.m, 2 );
-        assert.equal( l.c, 5 );
-        assert.equal( l.originPoint.y, 5 );
+        assert.equal( l.c, -5 );
+        assert.equal( l.originPoint.y, -5 );
     });
 
     it('distanceFromPoint', function(){
         var p = new Point(3,4);
         var origin = new Point(0,0);
         assert.equal( p.distanceFromPoint(origin), 5 );
+    });
+
+    it('pointInBoundary', function(){
+        var points = [
+            {
+                p: [3,4],
+                expect: true
+            },
+            {
+                p: [-10.000001,4],
+                expect: true
+            },
+            {
+                p: [-11,4],
+                expect: false
+            }
+        ];
+        for( var i = 0; i < points.length; i++ ){
+            var c = points[i];
+            var p = new Point(c.p[0], c.p[1]);
+            assert.equal(
+                p.inBoundary( -10, -10, 10, 10 ),
+                c.expect,
+                '(x,y) : ('+c.p[0]+","+c.p[1]+")"
+            );
+        }
     });
 });
 
