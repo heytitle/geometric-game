@@ -107,3 +107,17 @@ describe('Line', function(){
     });
 
 });
+
+describe('Box', function(){
+    describe('intersectWithLine', function(){
+        var box = new Box( 10, 5 );
+        it('', function(){
+            var line = new Line( 1,1, new Point(0,0 ) );
+            var  points = box.intersectWithLine( line );
+            assert.deepEqual( points, [
+                new Point( 2.5, 2.5 ),
+                new Point( -2.5, -2.5 )
+            ]);
+        });
+    });
+});
