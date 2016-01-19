@@ -172,7 +172,7 @@ Game.prototype.stop = function(){
     var finalScore = this.score + DIAMOND_MULTIPIER * this.diamond;
     $('#final-score').text(finalScore);
 
-    showDOM('control-pane');
+    $('#control-pane').show();
 }
 
 Game.prototype.setupLevel = function(){

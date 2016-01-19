@@ -3,7 +3,7 @@ var game = new Game();
 function startGame() {
     $('#control-pane').hide();
     $('#start-pane').hide();
-    $('#end-pane').show();
+    $('#end-pane').css('display', 'table');
     game.init();
 }
 
