@@ -1,3 +1,8 @@
+var DEBUG = false;
+if( location.href.match(/debug=1/) ) {
+    DEBUG = 1;
+}
+
 var game = new Game();
 
 function startGame() {

@@ -6,11 +6,14 @@ var DIAMOND_MULTIPIER = 10;
 
 var DRAG_OPACITY = 0.5;
 
+var SCALING = 30;
+
 var STATE = {
     IDLE: 0,
     SELECTING: 1,
     WAITING: 2,
-    TIMEUP: 3
+    TIMEUP: 3,
+    USING_SPECIAL_ITEM: 4
 };
 
 var DURATION = {

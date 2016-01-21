@@ -43,14 +43,18 @@ function Character( game, name,x,y ){
             directX *= plusOrMinus();
             directY *= plusOrMinus();
         }
-        // console.log( oldX, oldY );
         obj.attr('x', oldX );
         obj.attr('y', oldY );
     }
 
-    return obj;
-}
+    obj.point = function(){
+        var width  = parseInt(obj.attr('width'));
+        var height = parseInt(obj.attr('height'));
+        var x      = parseFloat( obj.attr('x') );
+        var y      = parseFloat( obj.attr('y') );
 
-Character.prototype.point = function(){
-    return new Point(  obj.attr('x'), obj.attr('y') )
+        return new Point(  x + width/2, y + height/2 )
+    }
+
+    return obj;
 }

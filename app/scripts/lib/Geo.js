@@ -89,3 +89,27 @@ Line.prototype.intersectWithLine = function( line ) {
     var y = this.m * x + this.c;
     return new Point( x, y );
 }
+
+function Box( width, height ) {
+    this.width = width;
+    this.height = height;
+
+    this.boundaries = [
+        new Line( 1, 0, new Point(0,  this.height/2) ),
+        new Line( 1, 0, new Point(0, -this.height/2) ),
+        new Line( 0, 1, new Point( this.width/2, 0) ),
+        new Line( 0, 1, new Point( -this.width/2, 0) )
+    ];
+}
+
+Box.prototype.intersectWithLine = function( line ) {
+    var intersect = [];
+    for( var l=0; l < this.boundaries.length; l++ ) {
+        var edge = this.boundaries[l];
+        var p = line.intersectWithLine(edge);
+        if( p.inBoundary( -this.width/2 ,-this.height/2 , this.width/2 , this.height/2) ) {
+            intersect.push( p );
+        }
+    }
+    return intersect;
+}

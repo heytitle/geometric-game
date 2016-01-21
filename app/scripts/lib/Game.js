@@ -1,6 +1,8 @@
 function Game(){
     this.soundFX   = new SoundFX();
     this.board   = Snap(IDCANVAS);
+    this.ham = new HamSandwich();
+
     this.sepLine = this.board.line(0,0,0,600);
     this.sepLine.addClass('separate-line');
     this.sepLine.attr('opacity', DRAG_OPACITY );
@@ -9,6 +11,10 @@ function Game(){
     this.mouseOriginPointer.addClass('mouse-origin-pointer');
     this.mouseOriginPointer.attr('opacity', DRAG_OPACITY );
 
+    this.SCALED_HEIGHT = this.board.node.offsetHeight/SCALING;
+    this.SCALED_WIDTH = this.board.node.offsetWidth/SCALING;
+
+    this.originBoundary = new Box( this.SCALED_WIDTH, this.SCALED_HEIGHT );
 }
 
 Game.prototype.init = function(){
@@ -49,6 +55,11 @@ Game.prototype.setupEnvironment = function(){
 Game.prototype.initEvents = function(){
     var self = this;
     /* Separate Line */
+    // this.board.click(function(e){
+    //     console.log('click');
+    //     e.preventDefault();
+    //     return false;
+    // });
     this.board.drag(function(dx,dy,x,y, event ){
         /* Ignore right click */
         if( event.button == 2 ) {
@@ -65,7 +76,8 @@ Game.prototype.initEvents = function(){
             return;
         }else {
             self.sepLine.addClass('show');
-            self.setState('selecting');;
+            self.mouseOriginPointer.addClass('show');
+            self.setState('selecting');
             fadeOutLine();
         }
 
@@ -77,26 +89,29 @@ Game.prototype.initEvents = function(){
         }
     },function(x,y, event ){
         /* Ignore right click */
-        if( event.button == 2 ) {
+        if( event.button == 2 || self.state == STATE.USING_SPECIAL_ITEM ) {
             return;
         }
 
         self.mouseOriginPointer.attr('cx', x );
         self.mouseOriginPointer.attr('cy', y );
-        self.mouseOriginPointer.addClass('show');
 
         if( self.state == STATE.waiting || self.state == STATE.TIMEUP ) return;
         self.sepLine.originX = x;
         self.sepLine.originY = y;
-    },function(x,y){
+    },function(x,y ){
         /* Ignore right click */
-        if( event.button == 2 ) {
+        if(  self.state != STATE.SELECTING && self.state != STATE.WAITING  ) {
             return;
         }
+
+        console.log('xxxxxxxxxx');
+        console.log(event);
 
         if ( Math.abs(self.dx) < 3 || Math.abs(self.dy) < 3 ) {
             console.log("small line");
             if( self.state == STATE.SELECTING ){
+		        self.computeScore();
                 fadeOutLine();
             }
             return ;
@@ -136,6 +151,10 @@ Game.prototype.initEvents = function(){
 Game.prototype.initObjectMovement = function(){
     var self = this;
     this.movement_timer = setInterval(function(){
+        if( self.state == STATE.USING_SPECIAL_ITEM ) {
+            return;
+        }
+
         var speedRatio = 0.5;
         if( self.state == STATE.SELECTING ) {
             speedRatio = 0.02;
@@ -167,7 +186,7 @@ Game.prototype.stop = function(){
     clearInterval(this.movement_timer);
 
     this.setState('timeup');
-    // this.board.undrag();
+    this.board.undrag();
 
     var finalScore = this.score + DIAMOND_MULTIPIER * this.diamond;
     $('#final-score').text(finalScore);
@@ -212,7 +231,6 @@ Game.prototype.setState = function(state){
 }
 
 Game.prototype.computeScore = function(){
-	console.log("scoringgg")
     var score = this.objects.length / 2;
 	var x1 = this.sepLine.originX;
 	var y1 = this.sepLine.originY;
@@ -296,12 +314,78 @@ Game.prototype._animateSpecial = function( sign, number ){
 }
 
 Game.prototype.useSpecialItem = function(){
-    if( this.diamond >= SPECIAL_ITEMS_TRADE ) {
+    if( this.diamond >= SPECIAL_ITEMS_TRADE  && this.state == STATE.IDLE ) {
         this.diamond = this.diamond - SPECIAL_ITEMS_TRADE;
         this._animateSpecial( '-', SPECIAL_ITEMS_TRADE );
-        /* Integrate with Geo.js */
 
-        console.log('Use item!');
+        this.setState('using_special_item');
+
+        /* Integrate with Geo.js */
+        var baskets = { 'cat':[], 'dog':[] };
+        for( var i = 0; i < this.objects.length; i++ ){
+            var obj = this.objects[i];
+            var p   = this.toOriginCoordinate( obj.point() );
+            baskets[obj.type].push(p.duality());
+        }
+
+        var keys = Object.keys(baskets);
+        var medLines = []
+        for( var i = 0; i < keys.length; i++ ){
+            var k = keys[i]
+            var med = this.ham.findMedian( baskets[k] );
+            medLines.push(med);
+        }
+        var point = this.ham.findIntersection(medLines[0], medLines[1]);
+        var points = this.originBoundary.intersectWithLine( point.duality() );
+
+        var avgX = 0;
+        var avgY = 0;
+        for( var i = 0; i < points.length; i++ ){
+            var p = points[i];
+
+            points[i] = this.toCanvasCoordinate(p);
+            avgX = points[i].x/points.length;
+            avgY = points[i].y/points.length;
+        }
+
+        var avgX = ( points[0].x + points[1].x )/2;
+        var avgY = ( points[0].y + points[1].y )/2;
+
+        var hintPoint = new Point( avgX, avgY );
+        var hintCircle = this.board.circle( hintPoint.x, hintPoint.y, 10 );
+        hintCircle.attr('opacity', DRAG_OPACITY );
+
+        this.setOriginSepLine(hintPoint);
+
+        var line;
+        if( DEBUG ){
+            line = this.board.line(
+                points[0].x,
+                points[0].y,
+                points[1].x,
+                points[1].y
+            );
+            line.attr({ stroke: '#000' } );
+        }
+
+        var self = this;
+        self.sepLine.addClass('show');
+        self.board.mousemove(function(e){
+            self.updateSepLine( hintPoint.x - e.x, hintPoint.y - e.y );
+        });
+
+        setTimeout(function(){
+            self.computeScore();
+            hintCircle.remove();
+            if(line) {
+                line.remove();
+            }
+            self.sepLine.removeClass('show');
+            self.board.unmousemove();
+            self.setState('IDLE');
+        }, DURATION.selecting * self.objects.length/2 );
+
+
     }else {
         // Blink the item
         $("#special-item-wrapper").animate({opacity:0},200,"linear",function(){
@@ -311,4 +395,33 @@ Game.prototype.useSpecialItem = function(){
     }
 }
 
+Game.prototype.setOriginSepLine = function(p){
+    this.sepLine.originX = p.x;
+    this.sepLine.originY = p.y;
+}
 
+Game.prototype.updateSepLine = function( dx, dy ){
+    var endpoints = [0,600];
+	console.log("scoringgg")
+    console.log(this.state);
+    for( var i = 0; i < endpoints.length; i++ ){
+        var attrKey = 'x'+(i+1);
+        endpoints[i] = (dx/dy)*(endpoints[i]-this.sepLine.originY)+this.sepLine.originX;
+        this.sepLine.attr(attrKey, endpoints[i]);
+    }
+    this.sepLine.dx = dx;
+    this.sepLine.dy = dy;
+}
+
+Game.prototype.toOriginCoordinate = function( p ) {
+    return new Point(
+        (p.x - this.board.node.offsetWidth/2)/SCALING,
+        (this.board.node.offsetHeight/2 - p.y)/SCALING
+    );
+}
+
+Game.prototype.toCanvasCoordinate = function( p ) {
+    var x = SCALING*p.x + this.board.node.offsetWidth/2;
+    var y = this.board.node.offsetHeight/2 - SCALING*p.y;
+    return new Point(x,y);
+}
