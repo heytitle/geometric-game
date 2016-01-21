@@ -97,7 +97,7 @@ normalPane.click(function(e){
     medianLines[color].push( dualLine );
 
     var intersect = intersectWithBoundary(dualLine);
-    line = dualPane.line(
+    var line = dualPane.line(
         intersect[0].x,
         intersect[0].y,
         intersect[1].x,
