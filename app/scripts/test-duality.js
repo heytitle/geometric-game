@@ -17,6 +17,8 @@ var medianLines = [[],[]];
 
 var toggle = {};
 
+var points = [[],[]];
+
 $(document).ready(function(){
     $("#show-median").click(function(){
         var points = [[],[]];
@@ -87,6 +89,8 @@ normalPane.click(function(e){
     var point = mapCoordinate( e.x,e.y );
     var c = COLOR_PROFILE[color];
     circle.attr({fill:  c });
+
+    points[color].push(point);
     /* Draw a Line on dualPane that intersected with 2 edges of dualPane boudary*/
     var dualLine = point.duality();
 
@@ -107,6 +111,8 @@ normalPane.click(function(e){
     },function(){
         line.attr({strokeWidth:1});
     });
+
+    $("#test-case").text( JSON.stringify(points) );
 
     /* End Line Drawing */
     color = ( color + 1 ) % 2;
