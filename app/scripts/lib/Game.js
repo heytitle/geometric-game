@@ -322,9 +322,11 @@ Game.prototype.useSpecialItem = function(){
 
         /* Integrate with Geo.js */
         var baskets = { 'cat':[], 'dog':[] };
+        var points  = [];
         for( var i = 0; i < this.objects.length; i++ ){
             var obj = this.objects[i];
             var p   = this.toOriginCoordinate( obj.point() );
+            points.push(p);
             baskets[obj.type].push(p.duality());
         }
 
@@ -336,7 +338,9 @@ Game.prototype.useSpecialItem = function(){
             medLines.push(med);
         }
         var point = this.ham.findIntersection(medLines[0], medLines[1]);
-        var points = this.originBoundary.intersectWithLine( point.duality() );
+        var line  = point.duality();
+        line = this.ham.adjustSeparateLine( line, points );
+        var points = this.originBoundary.intersectWithLine( line );
 
         var avgX = 0;
         var avgY = 0;
