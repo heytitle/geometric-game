@@ -96,6 +96,42 @@ HamSandwich.prototype.findIntersection = function(pointList1, pointList2) {
 	return undefined;
 }
 
+HamSandwich.prototype.adjustSeparateLine = function( line, points ){
+    var count = [[],[]];
+    for( var i = 0; i < points.length; i++ ){
+        var p = points[i];
+        if( !line.isPointOnLine(p) ) {
+            var index = 0;
+            if( !line.isPointAbove(p) ){
+                index = 1;
+            }
+            count[index].push(p);
+        }else {
+            // console.log(p);
+        }
+    }
+
+    var biggestGroup;
+    var factor = 1;
+    if( count[0].length > count[1].length ){
+        biggestGroup = count[0];
+    } else if( count[0].length < count[1].length ){
+        factor = -1;
+        biggestGroup = count[1];
+    } else {
+        console.log('not shift');
+        return line;
+    }
+
+    biggestGroup = biggestGroup.sort( function(a,b){
+        return a.distanceToLine( line ) - b.distanceToLine( line );
+    });
+
+    var dist = biggestGroup[0].distanceToLine(line)/2;
+    line.c = line.c  + factor * dist;
+    return line;
+}
+
 HamSandwich.prototype.sortPointBy = function( by ) {
     return function( p1, p2 ) {
         return p1[by] - p2[by];

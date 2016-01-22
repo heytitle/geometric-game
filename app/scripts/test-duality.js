@@ -21,10 +21,11 @@ var points = [[],[]];
 
 $(document).ready(function(){
     $("#show-median").click(function(){
-        var points = [[],[]];
+        var lines = [[],[]];
         for( var i = 0; i < 2; i++ ){
             var medianPoints = ham.findMedian( medianLines[i] );
-            points[i] = medianPoints;
+            lines[i] = medianPoints;
+            /* Draw Circle */
             for( var j = 0; j < medianPoints.length; j++ ){
                 var p = medianPoints[j];
                 p = convertPointToCanvasCoordinate(p);
@@ -34,8 +35,13 @@ $(document).ready(function(){
             }
         }
 
-        var point = ham.findIntersection(points[0], points[1]);
-        var canvasPoints = intersectWithBoundary(point.duality());
+        var point = ham.findIntersection( lines[0], lines[1] );
+        var line  = point.duality();
+        if( $('#shifting').prop("checked") ){
+            line = ham.adjustSeparateLine( line, points[0].concat(points[1]) );
+        }
+
+        var canvasPoints = intersectWithBoundary(line);
         var line = normalPane.line(
             canvasPoints[0].x,
             canvasPoints[0].y,

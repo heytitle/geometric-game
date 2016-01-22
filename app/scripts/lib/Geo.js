@@ -34,6 +34,12 @@ Point.prototype.inBoundary = function( x1, y1, x2, y2 ) {
 
 }
 
+Point.prototype.distanceToLine = function( line ) {
+    var dominator = Math.sqrt( Math.pow( line.m, 2 ) + 1 );
+    var cc = Math.abs(line.m * this.x - this.y + line.c);
+    return cc/dominator;
+}
+
 function Line( dx, dy, point ){
     if( dx == 0 ){
         this.m = Infinity;
@@ -56,7 +62,7 @@ Line.prototype.isPointOnLine = function( point ){
     if( this.m == Infinity ) {
         return ( point.x == this.originPoint.x );
     }else {
-        return this.findPointOnLine(point.x).y == point.y;
+        return this.findPointOnLine(point.x).y.toFixed(4) == point.y.toFixed(4);
     }
 }
 

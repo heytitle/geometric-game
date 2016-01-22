@@ -52,6 +52,14 @@ describe('Point', function () {
             );
         }
     });
+    it('distanceToLine', function(){
+        var point = new Point(1,1);
+        var line = new Line(1,0, new Point(0,10) );
+        assert.equal( point.distanceToLine(line), 9 );
+
+        line = new Line(1,-1, new Point(0,0) );
+        assert.equal( point.distanceToLine(line), 1.414213562373095 );
+    });
 });
 
 describe('Line', function(){
