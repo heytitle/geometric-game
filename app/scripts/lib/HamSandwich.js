@@ -128,9 +128,8 @@ HamSandwich.prototype.adjustSeparateLine = function( line, points ){
     });
 
     var dist = biggestGroup[0].distanceToLine(line)/2;
-    var dist2 = line.m*dist;
-
-    line.c = line.c  + factor * Math.sqrt( Math.pow(dist2, 2) + Math.pow( dist, 2) );
+	var shiftDist = dist / Math.cos(Math.atan(line.m))
+    line.c = line.c  + factor * shiftDist;
     return line;
 }
 
