@@ -338,9 +338,9 @@ Game.prototype.useSpecialItem = function(){
             medLines.push(med);
         }
         var point = this.ham.findIntersection(medLines[0], medLines[1]);
-        var line  = point.duality();
-        line = this.ham.adjustSeparateLine( line, points );
-        var points = this.originBoundary.intersectWithLine( line );
+        var hint  = point.duality();
+        hint = this.ham.adjustSeparateLine( hint, points );
+        var points = this.originBoundary.intersectWithLine( hint );
 
         var avgX = 0;
         var avgY = 0;
@@ -379,15 +379,16 @@ Game.prototype.useSpecialItem = function(){
         });
 
         setTimeout(function(){
+            self.board.unmousemove();
+            self.setState('IDLE');
             self.computeScore();
             hintCircle.remove();
             if(line) {
+                console.log(line);
                 line.remove();
             }
             self.sepLine.removeClass('show');
-            self.board.unmousemove();
-            self.setState('IDLE');
-        }, DURATION.selecting * self.objects.length/2 );
+        }, DURATION.selecting * 2 );
 
 
     }else {
@@ -406,8 +407,6 @@ Game.prototype.setOriginSepLine = function(p){
 
 Game.prototype.updateSepLine = function( dx, dy ){
     var endpoints = [0,600];
-	console.log("scoringgg")
-    console.log(this.state);
     for( var i = 0; i < endpoints.length; i++ ){
         var attrKey = 'x'+(i+1);
         endpoints[i] = (dx/dy)*(endpoints[i]-this.sepLine.originY)+this.sepLine.originX;
