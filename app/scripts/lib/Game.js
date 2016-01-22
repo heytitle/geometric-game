@@ -15,6 +15,8 @@ function Game(){
     this.SCALED_WIDTH = this.board.node.offsetWidth/SCALING;
 
     this.originBoundary = new Box( this.SCALED_WIDTH, this.SCALED_HEIGHT );
+
+    this.statusCounter;
 }
 
 Game.prototype.init = function(){
@@ -68,7 +70,6 @@ Game.prototype.initEvents = function(){
         /* Move Event */
 		self.sepLine.dx = dx;
 		self.sepLine.dy = dy;
-		console.log("dx and dy", self.sepLine.dx + " " + self.sepLine.dy);
 
 
         if(  self.state == STATE.WAITING ) {
@@ -90,6 +91,7 @@ Game.prototype.initEvents = function(){
     },function(x,y, event ){
         /* Ignore right click */
         if( event.button == 2 || self.state == STATE.USING_SPECIAL_ITEM ) {
+            console.log("Not Drag");
             return;
         }
 
@@ -102,11 +104,10 @@ Game.prototype.initEvents = function(){
     },function(x,y ){
         /* Ignore right click */
         if(  self.state != STATE.SELECTING && self.state != STATE.WAITING  ) {
+            console.log("Release from something eles");
             return;
         }
 
-        console.log('xxxxxxxxxx');
-        console.log(event);
 
         if ( Math.abs(self.dx) < 3 || Math.abs(self.dy) < 3 ) {
             console.log("small line");
@@ -116,8 +117,9 @@ Game.prototype.initEvents = function(){
             }
             return ;
         }
-		self.computeScore();
         if( self.state == STATE.SELECTING ){
+            self.setState('waiting');
+		    self.computeScore();
             fadeOutLine();
         }
 		self.sepLine.dx = 0;
@@ -139,7 +141,7 @@ Game.prototype.initEvents = function(){
             this.attr('opacity', DRAG_OPACITY );
             self.setState('waiting');
 
-            setTimeout(function(){
+            self.statusCounter = setTimeout(function(){
                 self.setState('idle');
             }, DURATION.waiting );
         });
@@ -219,7 +221,12 @@ Game.prototype.setupLevel = function(){
 
 Game.prototype.setState = function(state){
     var k = state.toUpperCase();
-	console.log( k);
+
+    clearTimeout( this.statusCounter );
+
+    if( STATE[k] == this.state ) { return; }
+
+    console.log("Set State: " + state );
     if( Object.keys(STATE).indexOf(k) == -1 ){
         throw new Error( "This state doesn't exist : " + k );
     }
@@ -314,7 +321,7 @@ Game.prototype._animateSpecial = function( sign, number ){
 }
 
 Game.prototype.useSpecialItem = function(){
-    if( this.diamond >= SPECIAL_ITEMS_TRADE  && this.state == STATE.IDLE ) {
+    if( this.diamond >= -1000 && this.state == STATE.IDLE ) {
         this.diamond = this.diamond - SPECIAL_ITEMS_TRADE;
         this._animateSpecial( '-', SPECIAL_ITEMS_TRADE );
 
@@ -378,25 +385,39 @@ Game.prototype.useSpecialItem = function(){
             self.updateSepLine( hintPoint.x - e.x, hintPoint.y - e.y );
         });
 
-        setTimeout(function(){
+        var counter = setTimeout(function(){
+            finishSpecialItem();
+        }, DURATION.selecting * 2 );
+
+        self.board.click(function(){
+            clearTimeout(counter);
+            finishSpecialItem();
+        });
+
+        function finishSpecialItem(){
             self.board.unmousemove();
-            self.setState('IDLE');
+            self.board.unclick();
+
+            console.log("FINISH SPECIAL");
+
             self.computeScore();
             hintCircle.remove();
             if(line) {
                 console.log(line);
                 line.remove();
             }
+            self.setState('IDLE');
             self.sepLine.removeClass('show');
-        }, DURATION.selecting * 2 );
+        }
 
 
     }else {
-        // Blink the item
-        $("#special-item-wrapper").animate({opacity:0},200,"linear",function(){
-            $(this).animate({opacity:1},200);
-        });
-        this.soundFX.play('error');
+        if( this.diamond < SPECIAL_ITEMS_TRADE ) {
+            $("#special-item-wrapper").animate({opacity:0},200,"linear",function(){
+                $(this).animate({opacity:1},200);
+            });
+            this.soundFX.play('error');
+        }
     }
 }
 
