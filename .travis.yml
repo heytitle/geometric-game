@@ -1,3 +1,7 @@
 language: node_js
 node_js:
     - "0.12.1"
+
+notifications:
+  email:
+    - pham.duy89@gmail.com
