@@ -102,9 +102,14 @@ DCEL.prototype.addVertexAt(vertex, halfedge) {
 	h2.next = halfedge.next;
 	h1.prev = halfedge;
 	h2.prev = h1;
+	halfedge.next = h1;
 	h2.next.prev = h2;
 }	
 
 DCEL.prototype.splitFace(halfedge, vertex) {
+	
 }
 
+DCEL.prototype.addNewLine(line) {
+
+}
