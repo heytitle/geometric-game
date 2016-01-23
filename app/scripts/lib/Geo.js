@@ -34,6 +34,10 @@ Point.prototype.inBoundary = function( x1, y1, x2, y2 ) {
 
 }
 
+Point.prototype.isSamePoint = function(p) {
+    return this.x == p.x && this.y == p.y;
+}
+
 Point.prototype.distanceToLine = function( line ) {
     var dominator = Math.sqrt( Math.pow( line.m, 2 ) + 1 );
     var cc = Math.abs(line.m * this.x - this.y + line.c);
