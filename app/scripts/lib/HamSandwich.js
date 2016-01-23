@@ -21,7 +21,9 @@ HamSandwich.prototype.findMedian = function(lines) {
 	for (i = 0; i < lines.length - 1; i++) {
 		for (j = i + 1; j < lines.length; j++) {
             var point = lines[i].intersectWithLine( lines[j] );
-			events.push(point);
+            if( point ) {
+			    events.push(point);
+            }
 		}
 	}
 

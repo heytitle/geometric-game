@@ -68,16 +68,13 @@ describe('findMedian', function () {
         assert.deepEqual(
             ham.findMedian(lines),
             [
-                new Point( Number.MIN_SAFE_INTEGER, 0 ),
+                new Point( MIN_NUMBER, 0 ),
 				new Point( -2, 0 ),
-                new Point( 0, 0 ),
-				new Point( 0, 2 ),
+				new Point( -0, 2 ),
                 new Point( 1, 1 ),
-				new Point( 1, 3 ),
-                new Point( 2, 0 ),
-				new Point( 2, 2 ),
-			    new Point( 4, 0),
-                new Point( Number.MAX_SAFE_INTEGER, 0 )
+                new Point( 2, 2 ),
+			    new Point( 4, 0 ),
+                new Point( MAX_NUMBER, 0 )
             ]
 
  );
