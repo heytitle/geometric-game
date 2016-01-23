@@ -18,19 +18,19 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
         new Vertex(x2,y2),
         new Vertex(x1,y2)
     ];
+
     var edges = [
         new Edge( vertices[0] ),
         new Edge( vertices[1] ),
         new Edge( vertices[2] ),
         new Edge( vertices[3] )
     ];
-    var twinEdges = JSON.parse(JSON.stringify(edges)).reverse();
-    // var twinEdges = [
-    //     new Edge( new Point(x1,y2) ),
-    //     new Edge( new Point(x2,y2) ),
-    //     new Edge( new Point(x2,y1) ),
-    //     new Edge( new Point(x1,y1) )
-    // ];
+    var twinEdges = [
+        new Edge( vertices[3] ),
+        new Edge( vertices[2] ),
+        new Edge( vertices[1] ),
+        new Edge( vertices[0] )
+    ];
     var attrs = ['next', 'prev'];
     for( var i = 0; i < 4; i++ ){
         var e = edges[i];
@@ -43,18 +43,35 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
             e[attrs[j]] = edges[index];
             t[attrs[j]] = twinEdges[index];
         }
+        e.target.outGoingEdges.push( e.next );
+        t.target.outGoingEdges.push( t.next );
     }
     this.halfedge = edges[0];
 }
 
-Face.prototype.getIncidentEdges = function(){
+Face.prototype.getIncidentEdges = function( parseFN ){
     var next = this.halfedge;
     var edges = [];
     do {
-        edges.push(next);
+        if( parseFN ){
+            edges.push( parseFN(next) );
+        }else {
+            edges.push(next);
+        }
         next = next.next;
     } while ( !next.isSameEdge( this.halfedge)  );
     return edges
+}
+
+Face.prototype.getVertices = function( parseFN ) {
+    var vertices = this.getIncidentEdges( function(obj){
+        var v = obj.target;
+        if( parseFN ) {
+            return parseFN(v);
+        }
+        return v;
+    });
+    return vertices;
 }
 
 function Edge(target){

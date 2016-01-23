@@ -35,20 +35,41 @@ describe('Edge', function(){
 });
 
 describe('Construct Face', function () {
-    var face = new Face();
-    face.initWithBoundary(new Point( -10,-10 ), new Point(10,10 ) );
-    console.log(face.getIncidentEdges());
     it('normal case',function(){
-        assert.equal(1,1);
-        // assert.deepEqual(
-        //     ham.findMedian(lines),
-        //     [
-        //         new Point( MIN_NUMBER, 0 ),
-        //         new Point( 0, 0 ),
-        //         new Point( 1, 1 ),
-        //         new Point( 2, 0 ),
-        //         new Point( MAX_NUMBER, 0 )
-        //     ]
-        // );
+        var face = new Face();
+        face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
+
+        var incEdges = face.getIncidentEdges(function( obj ){
+            return { target: obj.target.coordinate };
+        });
+
+
+        assert.deepEqual( incEdges,
+            [
+                { target: { x: -10, y: -10 }},
+                { target: { x: 10, y: -10  }},
+                { target: { x: 10, y: 10   }},
+                { target: { x: -10, y: 10  }}
+            ],
+            "Correct edges"
+        );
+
+        var vertices = face.getVertices( function(obj) {
+            return {
+                x: obj.coordinate.x,
+                y: obj.coordinate.y,
+                outGoingEdges: obj.outGoingEdges.length
+            };
+        });
+
+        assert.deepEqual( vertices,
+            [
+                { x: -10, y: -10, outGoingEdges: 2 },
+                { x: 10, y: -10, outGoingEdges: 2 },
+                { x: 10, y: 10, outGoingEdges: 2 },
+                { x: -10, y: 10, outGoingEdges: 2 }
+            ],
+            "Correct vertices"
+        );
     });
 });
