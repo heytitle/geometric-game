@@ -103,11 +103,13 @@ Vertex.prototype.isSameVertex = function( v ){
 }
 
 function DCEL(edge){
-    this.faces = [];
+    this.faces = [edge.face];
+
+    /* Out-going edge from top left point */
 	this.initialEdge = edge;
 }
 
-DCEL.prototype.addVertexAt(vertex, halfedge) {
+DCEL.prototype.addVertexAt = function(vertex, halfedge) {
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
 	vertex.outGoingEdges.push(h2);
@@ -121,12 +123,16 @@ DCEL.prototype.addVertexAt(vertex, halfedge) {
 	h2.prev = h1;
 	halfedge.next = h1;
 	h2.next.prev = h2;
-}	
 
-DCEL.prototype.splitFace(halfedge, vertex) {
-	
+    halfedge.target.outGoingEdges.push(h1);
 }
 
-DCEL.prototype.addNewLine(line) {
+DCEL.prototype.splitFace = function (halfedge, vertex) {
 
 }
+
+DCEL.prototype.addNewLine = function (line) {
+
+}
+
+DCEL.prototype.splitFace = function(halfedge, vertex) {}
