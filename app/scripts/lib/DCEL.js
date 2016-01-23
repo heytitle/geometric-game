@@ -85,6 +85,26 @@ Vertex.prototype.isSameVertex = function( v ){
     return this.coordinate.isSamePoint( v.coordinate );
 }
 
-function DCEL(){
+function DCEL(edge){
     this.faces = [];
+	this.initialEdge = edge;
 }
+
+DCEL.prototype.addVertexAt(vertex, halfedge) {
+	h1 = new Edge(vertex);
+	h2 = new Edge(halfedge.target);
+	vertex.outGoingEdges.push(h2);
+	h1.twin = h2;
+	h2.twin = h1;
+	h1.face = halfedge.face;
+	h2.face = halfedge.face;
+	h1.next = h2;
+	h2.next = halfedge.next;
+	h1.prev = halfedge;
+	h2.prev = h1;
+	h2.next.prev = h2;
+}	
+
+DCEL.prototype.splitFace(halfedge, vertex) {
+}
+
