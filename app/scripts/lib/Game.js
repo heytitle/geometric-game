@@ -169,7 +169,7 @@ Game.prototype.initObjectMovement = function(){
                 speedRatio
             );
         }
-    }, 50);
+    }, 20);
 }
 
 Game.prototype.start = function(){
@@ -321,7 +321,8 @@ Game.prototype._animateSpecial = function( sign, number ){
 }
 
 Game.prototype.useSpecialItem = function(){
-    if( this.diamond >= -1000 && this.state == STATE.IDLE ) {
+    //if( this.diamond >= -1000 && this.state == STATE.IDLE ) {
+    if( true ) {
         this.diamond = this.diamond - SPECIAL_ITEMS_TRADE;
         this._animateSpecial( '-', SPECIAL_ITEMS_TRADE );
 
@@ -334,9 +335,7 @@ Game.prototype.useSpecialItem = function(){
             var obj = this.objects[i];
             var p   = this.toOriginCoordinate( obj.point() );
             points.push(p);
-            baskets[obj.type].push(p.duality());
-        }
-
+            baskets[obj.type].push(p.duality()); } 
         var keys = Object.keys(baskets);
         var medLines = []
         for( var i = 0; i < keys.length; i++ ){

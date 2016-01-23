@@ -40,12 +40,12 @@ var MAX_LEVEL = Object.keys(LEVEL_SETTING).splice(-1,1);
 
 var MOVEMENT_CHARACTER = {
     dog: {
-        speedX: 5,
-        speedY: 5,
+        speedX: 2,
+        speedY: 2,
     },
     cat: {
-        speedX: 6,
-        speedY: 6,
+        speedX: 3,
+        speedY: 3,
     }
 }
 

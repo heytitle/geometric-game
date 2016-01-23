@@ -11,7 +11,7 @@ function Character( game, name,x,y ){
     obj.type = name;
     obj.direction = Math.random()*plusOrMinus();
 
-    obj.moveTurn = randomInRange(0,50);
+    obj.moveTurn = randomInRange(0, 100);
     // console.log(obj.moveTurn);
 
     var directX = plusOrMinus();
@@ -20,7 +20,7 @@ function Character( game, name,x,y ){
 
         var oldX = parseInt(obj.attr('x'));
         var oldY = parseInt(obj.attr('y'));
-        if( (++obj.moveTurn) == 50 ) {
+        if( (++obj.moveTurn) == 100) {
             obj.moveTurn = 0;
             directX = plusOrMinus();
             directY = plusOrMinus();
@@ -35,13 +35,13 @@ function Character( game, name,x,y ){
 
         if( oldX < size || oldX > ( rangeX - size ) ){
             oldX -= 2*delX;
-            directX *= plusOrMinus();
-            directY *= plusOrMinus();
+			directX = -directX;
+			obj.moveTurn = 0;
         }
         if( oldY < size || oldY > ( rangeY - size ) ){
             oldY -= 2*delY;
-            directX *= plusOrMinus();
-            directY *= plusOrMinus();
+			directY = -directY;
+			obj.moveTurn = 0;
         }
         obj.attr('x', oldX );
         obj.attr('y', oldY );
