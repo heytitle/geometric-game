@@ -2,8 +2,7 @@ function Game(){
     this.soundFX   = new SoundFX();
     this.board   = Snap(IDCANVAS);
     this.ham = new HamSandwich();
-
-    this.sepLine = this.board.line(0,0,0,600);
+this.sepLine = this.board.line(0,0,0,600);
     this.sepLine.addClass('separate-line');
     this.sepLine.attr('opacity', DRAG_OPACITY );
 
@@ -321,8 +320,7 @@ Game.prototype._animateSpecial = function( sign, number ){
 }
 
 Game.prototype.useSpecialItem = function(){
-    //if( this.diamond >= -1000 && this.state == STATE.IDLE ) {
-    if( true ) {
+    if( this.diamond >= -1000 && this.state == STATE.IDLE ) {
         this.diamond = this.diamond - SPECIAL_ITEMS_TRADE;
         this._animateSpecial( '-', SPECIAL_ITEMS_TRADE );
 
