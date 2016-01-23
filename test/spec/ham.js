@@ -12,8 +12,8 @@ var myCode = fs.readFileSync('./app/scripts/lib/HamSandwich.js','utf-8');
 eval.call(null,geo);
 eval.call(null,myCode);
 
-describe('findMedian', function () {
-    it('',function(){
+describe('Ham : findMedian', function () {
+    it('normal case',function(){
         var ham = new HamSandwich();
         var lines = [
             new Line(1,0, new Point(0, 0) ),
@@ -54,8 +54,8 @@ describe('findMedian', function () {
     });
 });
 
-describe('findMedian', function () {
-    it('',function(){
+describe('Ham : findMedian', function () {
+    it('case 1',function(){
         var ham = new HamSandwich();
         var lines = [
 		    new Line(1,1, new Point(-2, 0) ),
@@ -77,14 +77,10 @@ describe('findMedian', function () {
                 new Point( MAX_NUMBER, 0 )
             ]
 
- );
+        );
     });
-});
 
-
-
-describe('findIntersection', function () {
-    it('',function(){
+    it('case 2',function(){
         var ham = new HamSandwich();
         var pointList1 = [
 			new Point(0, 0),
@@ -106,16 +102,3 @@ describe('findIntersection', function () {
         );
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
