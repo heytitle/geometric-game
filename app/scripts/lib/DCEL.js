@@ -36,16 +36,27 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
     for( var i = 0; i < 4; i++ ){
         var e = edges[i];
         var t = twinEdges[i];
-        e.face = this;
-        e.twin = t;
-        t.twin = e;
+        e.setTwin(t);
         for( var j = 0; j < attrs.length; j++ ){
             var index = ( 4*j + (i+Math.pow(-1, j) * 1) )%4;
             e[attrs[j]] = edges[index];
-            t[attrs[j]] = twinEdges[index];
         }
         e.target.outGoingEdges.push( e.next );
-        t.target.outGoingEdges.push( t.next );
+    }
+
+    twinEdges[0].prev = twinEdges[1];
+    twinEdges[1].prev = twinEdges[2];
+    twinEdges[2].prev = twinEdges[3];
+    twinEdges[3].prev = twinEdges[0];
+
+    twinEdges[0].next = twinEdges[3];
+    twinEdges[1].next = twinEdges[0];
+    twinEdges[2].next = twinEdges[1];
+    twinEdges[3].next = twinEdges[2];
+
+    for( var i = 0 ; i < twinEdges.length; i++ ) {
+     var t = twinEdges[i];
+      t.target.outGoingEdges.push( t.next );
     }
     this.halfedge = edges[0];
 }
@@ -118,8 +129,7 @@ Face.prototype.splitFaceByLine = function( line ){
 		}
 	});
 
-	return this.splitFace( e, intersect[1]);
-    // console.log(edge.prev);
+	return this.splitFace( edge, intersect[1] );
 }
 
 function Edge(target){
@@ -206,6 +216,13 @@ Edge.prototype.traverse = function(parseFN){
     } while( !next.isSameEdge( this ) )
 }
 
+Edge.prototype.toJSON = function(){
+    return {
+        origin: this.origin().coordinate,
+        target: this.target.coordinate
+    }
+}
+
 function Vertex(x,y) {
     this.coordinate = new Point(x,y);
     this.outGoingEdges = [];
@@ -263,11 +280,6 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 
     this.addVertexAt( vertex, halfedge1 );
     this.addVertexAt( vertex, halfedge2 );
-	console.log(edge.prev.target.coordinate);
-	console.log(edge.next.twin.target.coordinate);
-	console.log(edge.next.target.coordinate);
-
-    // edge.face.halfedge = halfedge1;
 
 	halfedge1.twin.prev = halfedge1.next.twin;
 	halfedge2.twin.prev = halfedge2.next.twin;
@@ -282,8 +294,9 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 	halfedge2.next.twin.next = halfedge2.twin;
 }
 
-DCEL.prototype.splitFace = function (halfedge, vertex) {
+Face.prototype.splitFace = function (halfedge, vertex) {
 	if (!halfedge || ! vertex) { return }
+
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
 	f1 = new Face(h1);
