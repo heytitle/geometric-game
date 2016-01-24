@@ -40,7 +40,7 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
         e.twin = t;
         t.twin = e;
         for( var j = 0; j < attrs.length; j++ ){
-            var index = (i+1)%4;
+            var index = ( 4*j + (i+Math.pow(-1, j) * 1) )%4;
             e[attrs[j]] = edges[index];
             t[attrs[j]] = twinEdges[index];
         }
@@ -51,31 +51,56 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
 }
 
 Face.prototype.getIncidentEdges = function( parseFN ){
-    var next = this.halfedge;
     var edges = [];
-    do {
-        if( parseFN ){
-            edges.push( parseFN(next) );
-        }else {
-            edges.push(next);
+    this.traverseIncidentEdges( function(obj){
+        if( parseFN ) {
+            edges.push(parseFN(obj));
+        } else {
+            edges.push(obj);
         }
-        next = next.next;
-    } while ( !next.isSameEdge( this.halfedge)  );
+    });
     return edges
 }
 
-Face.prototype.getVertices = function( parseFN ) {
-    var vertices = this.getIncidentEdges( function(obj){
-        var v = obj.target;
-        if( parseFN ) {
-            return parseFN(v);
+Face.prototype.traverseIncidentEdges = function( parseFN ) {
+    var next = this.halfedge;
+    do {
+        if( parseFN ){
+            parseFN(next);
+        }else {
+            console.log( next );
         }
-        return v;
+        next = next.next;
+    } while ( !next.isSameEdge( this.halfedge)  );
+}
+
+Face.prototype.getVertices = function( parseFN ) {
+    var vertices = [];
+    this.traverseIncidentEdges( function(edge){
+        var v = edge.target;
+        if( parseFN ) {
+            vertices.push(parseFN(v));
+        }else {
+            vertices.push(v);
+        }
     });
     return vertices;
 }
 
-function Edge( target ){
+Face.prototype.intersectWithLine = function( line ) {
+    var intersect = [];
+    this.traverseIncidentEdges( function(edge){
+        var v = edge.intersectWithLine(line);
+        if( v ) {
+            intersect.push(v);
+        }
+    });
+
+    if( intersect ) { return intersect }
+    return;
+}
+
+function Edge(target){
     this.target = target;
 
     this.next;
@@ -92,6 +117,27 @@ Edge.prototype.isSameEdge = function( edge ){
     var sameTarget = edge.target.isSameVertex( this.target );
     var sameOrigin = this.origin().isSameVertex( edge.origin() );
     return sameTarget && sameOrigin;
+}
+
+Edge.prototype.intersectWithLine = function( line ){
+    var origin = this.origin().coordinate;
+    var target = this.target.coordinate;
+
+    var thisLine = new Line(
+        origin.x - target.x,
+        origin.y - target.y,
+        origin
+    );
+
+
+    var p = thisLine.intersectWithLine(line);
+
+    var xs = [ origin.x, target.x ].sort();
+    var ys = [ origin.y, target.y ].sort();
+
+    if( p && p.inBoundary( xs[0], ys[0], xs[1], ys[1] )){
+        return new Vertex( p.x, p.y );
+    }
 }
 
 function Vertex(x,y) {

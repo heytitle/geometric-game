@@ -36,13 +36,39 @@ describe('Edge', function(){
     describe('intersect with line', function(){
         var e;
         beforeEach(function(){
-            e = newEdge(0,0, 5,5);
+            e = newEdge(1,1, 5,5);
         });
         it('intersect', function(){
             var v = e.intersectWithLine(
                 new Line( 1, 0, new Point( 0, 2 ) )
             );
             assert.deepEqual( v.coordinate, {x: 2, y: 2});
+
+            v = e.intersectWithLine(
+                new Line( 0, 0, new Point( 5, 0 ) )
+            );
+            assert.deepEqual( v.coordinate, {x: 5, y: 5});
+        });
+
+        it('vertical edge', function(){
+            e = newEdge( -10,10, -10,-10 );
+            var v = e.intersectWithLine(
+                new Line( 1, 0, new Point( 0, 2 ) )
+            );
+
+            assert.deepEqual( v.coordinate, {x: -10, y: 2});
+
+            v = e.intersectWithLine(
+                new Line( 1, 0, new Point( 0, 5 ) )
+            );
+            assert.deepEqual( v.coordinate, {x: -10, y: 5});
+        });
+
+        it('miss', function(){
+            var v = e.intersectWithLine(
+                new Line( 1, 0, new Point( 0, -20 ) )
+            );
+            assert.ok( !v );
         });
     });
 });
@@ -58,16 +84,16 @@ describe('Face', function () {
     it('Construct Face',function(){
 
         var incEdges = face.getIncidentEdges(function( obj ){
-            return { target: obj.target.coordinate };
+            return { target: obj.target.coordinate, origin: obj.origin().coordinate };
         });
 
 
         assert.deepEqual( incEdges,
             [
-                { target: { x: -10, y: -10 }},
-                { target: { x: 10, y: -10  }},
-                { target: { x: 10, y: 10   }},
-                { target: { x: -10, y: 10  }}
+                { target: { x: -10, y: -10 }, origin: { x: -10, y: 10 } },
+                { target: { x: 10, y: -10  }, origin: { x: -10, y: -10 } },
+                { target: { x: 10, y: 10   }, origin: { x: 10, y: -10 } },
+                { target: { x: -10, y: 10  }, origin: { x: 10, y: 10 } }
             ],
             "Correct edges"
         );
@@ -92,7 +118,14 @@ describe('Face', function () {
     });
     describe("Check Intersect with line", function(){
         it("Intersect", function(){
-            var l = new Line(1,1, new Point(0,0) );
+            var l = new Line(1,0, new Point(0,0) );
+            var vertices = face.intersectWithLine( l );
+            assert.deepEqual( vertices,
+                [
+                    { coordinate: { x: -10, y: 0 }, outGoingEdges: [] },
+                    { coordinate: { x: 10, y: 0 }, outGoingEdges: [] }
+                ]
+            );
         });
 
         it("Miss", function(){
@@ -218,7 +251,7 @@ describe("DCEL", function() {
 
 function newEdge( x1,y1, x2,y2 ) {
 
-    var v1 = new Vertex( x1,y1 );
+    var v1 = new Vertex( x1, y1 );
     var v2 = new Vertex( x2, y2 );
 
     var e = new Edge( v2 );
