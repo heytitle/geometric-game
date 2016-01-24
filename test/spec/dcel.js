@@ -135,6 +135,87 @@ describe("DCEL", function(){
     });
 });
 
+describe("DCEL", function() {
+	it("Split Face", function(){
+		var v1 = new Vertex(-10, -10);
+		var v2 = new Vertex(-5, -10);
+		var v3 = new Vertex(10, 0);
+		var v4 = new Vertex(5, 5);
+		var v5 = new Vertex(0, 5);
+		var v6 = new Vertex(-10, 0);
+
+		var h1 = new Edge(v1);
+		var h2 = new Edge(v2);
+		var h3 = new Edge(v3);
+		var h4 = new Edge(v4);
+		var h5 = new Edge(v5);
+		var h6 = new Edge(v6);
+
+		h1.next = h2;
+		h2.next = h3;
+		h3.next = h4;
+		h4.next = h5;
+		h5.next = h6;
+		h6.next = h1;
+
+		v6.outGoingEdges.push(h1);
+		v1.outGoingEdges.push(h2);
+		v2.outGoingEdges.push(h3);
+		v3.outGoingEdges.push(h4);
+		v4.outGoingEdges.push(h5);
+		v5.outGoingEdges.push(h6);
+
+		var h1Twin = new Edge(v6);
+		var h2Twin = new Edge(v1);
+		var h3Twin = new Edge(v2);
+		var h4Twin = new Edge(v3);
+		var h5Twin = new Edge(v4);
+		var h6Twin = new Edge(v5);
+
+		h1Twin.next = h6Twin; 
+		h2Twin.next = h1Twin;
+		h3Twin.next = h2Twin;
+		h4Twin.next = h3Twin;
+		h5Twin.next = h4Twin;
+		h6Twin.next = h5Twin;
+
+
+		h1.twin = h1Twin;
+		h2.twin = h2Twin;
+		h3.twin = h3Twin;
+		h4.twin = h4Twin;
+		h5.twin = h5Twin;
+		h6.twin = h6Twin;
+
+		var f = new Face(h1);
+
+		h1.face = f;
+		h2.face = f;
+		h3.face = f;
+		h4.face = f;
+		h5.face = f;
+		h6.face = f;
+
+        var dcel = new DCEL(h1);
+		dcel.splitFace(h1, v4);
+
+        assert.deepEqual( v1.outGoingEdges.length, 2);
+        assert.deepEqual( v1.outGoingEdges[1].target, v4);
+        assert.deepEqual( v4.outGoingEdges.length, 2);
+        assert.deepEqual( v4.outGoingEdges[1].target, v1);
+        assert.deepEqual( v1.outGoingEdges[1].face.halfedge, v1.outGoingEdges[1]);
+        assert.notDeepEqual( v1.outGoingEdges[1].face, f);
+        assert.deepEqual( v4.outGoingEdges[1].face.halfedge, v4.outGoingEdges[1]);
+        assert.notDeepEqual( v4.outGoingEdges[1].face, f);
+        assert.deepEqual( h2.face, v4.outGoingEdges[1].face);
+        assert.deepEqual( h3.face, v4.outGoingEdges[1].face);
+        assert.deepEqual( h4.face, v4.outGoingEdges[1].face);
+        assert.deepEqual( h5.face, v1.outGoingEdges[1].face);
+        assert.deepEqual( h6.face, v1.outGoingEdges[1].face);
+        assert.deepEqual( h1.face, v1.outGoingEdges[1].face);
+	});
+});
+
 function newEdge( x1,y1, x2,y2 ) {
 
     var v1 = new Vertex( x1,y1 );

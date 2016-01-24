@@ -1,4 +1,5 @@
-function Face(){
+function Face( edge ){
+	this.halfedge = edge ;
 }
 
 Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
@@ -74,7 +75,7 @@ Face.prototype.getVertices = function( parseFN ) {
     return vertices;
 }
 
-function Edge(target){
+function Edge( target ){
     this.target = target;
 
     this.next;
@@ -128,11 +129,45 @@ DCEL.prototype.addVertexAt = function(vertex, halfedge) {
 }
 
 DCEL.prototype.splitFace = function (halfedge, vertex) {
+	h1 = new Edge(vertex);
+	h2 = new Edge(halfedge.target);
+	f1 = new Face(h1);
+	f2 = new Face(h2);
+	h1.twin = h2;
+	h2.twin = h1;
+	h2.next = halfedge.next;
+	h2.next.prev = h2;
+	h1.prev = halfedge;
+	halfedge.next = h1;
 
+	i = h2;
+	while ( true ) {
+		i.face = f2;
+		if (i.target.isSameVertex(vertex)) {
+			break;
+		}
+		i = i.next;
+	}
+
+	h1.next = i.next;
+	h1.next.prev = h1;
+	i.next = h2;
+	h2.prev = i;
+
+	i = h1;
+	while (true) {
+		i.face = f1;
+		if ( i.target.isSameVertex(halfedge.target) ) {
+			break;
+		}
+		i = i.next;
+	}
+
+	halfedge.target.outGoingEdges.push(h1);
+	vertex.outGoingEdges.push(h2);
 }
 
 DCEL.prototype.addNewLine = function (line) {
 
 }
 
-DCEL.prototype.splitFace = function(halfedge, vertex) {}
