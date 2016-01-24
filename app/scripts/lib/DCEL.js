@@ -140,6 +140,27 @@ Edge.prototype.intersectWithLine = function( line ){
     }
 }
 
+Edge.prototype.isPointOnEdge = function( v ) {
+    var origin = this.origin().coordinate;
+    var target = this.target.coordinate;
+
+    var thisLine = new Line(
+        origin.x - target.x,
+        origin.y - target.y,
+        origin
+    );
+
+    var xs = [ origin.x, target.x ].sort();
+    var ys = [ origin.y, target.y ].sort();
+
+    var p = thisLine.isPointOnLine(v.coordinate);
+
+    if( p && v.coordinate.inBoundary( xs[0], ys[0], xs[1], ys[1] )){
+        return true;
+    }
+    return false;
+}
+
 Edge.prototype.setTwin = function( e ) {
     this.twin = e;
     e.twin = this;
@@ -150,6 +171,18 @@ Edge.prototype.setOrigin = function( v ) {
     oldOrigin.removeEdge(this);
     v.outGoingEdges.push(this);
 };
+
+Edge.prototype.traverse = function(parseFN){
+    var next = this;
+    do {
+        if(parseFN){
+            parseFN(next);
+        }else{
+            console.log(next);
+        }
+        next = next.next;
+    } while( !next.isSameEdge( this ) )
+}
 
 function Vertex(x,y) {
     this.coordinate = new Point(x,y);
@@ -162,7 +195,8 @@ Vertex.prototype.isSameVertex = function( v ){
 
 Vertex.prototype.removeEdge = function( e ) {
     for( var i = 0; i < this.outGoingEdges.length; i++ ){
-        if( e.isSameEdge( this.outGoingEdges[i] ) ){
+        var v = this.outGoingEdges[i];
+        if( e.isSameEdge( v ) ){
             this.outGoingEdges.splice(i,1);
             break;
         }
@@ -195,17 +229,16 @@ DCEL.prototype.addVertexAt = function(vertex, halfedge) {
     halfedge.target.outGoingEdges.push(h1);
 }
 
-DCEL.prototype.addVertexOnEdge = function( vertex, Edge edge) {
-	v1 = edge.target;
-	v2 = edge.twin.target;
-	edge.target = undefined;
-	edge.twin.target = undefined;
+DCEL.prototype.addVertexOnEdge = function( vertex, edge) {
+	var v1 = edge.target;
+	var v2 = edge.twin.target;
 
-	v1.outGoingEdges.remove(edge.twin);
-	v2.outGoingEdges.remove(edge);
+	v1.removeEdge(edge.twin);
+	v2.removeEdge(edge);
 
 	halfedge1 = edge.prev;
 	halfedge2 = edge.next.twin;
+
     this.addVertexAt( vertex, halfedge1 );
     this.addVertexAt( vertex, halfedge2 );
 

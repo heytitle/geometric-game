@@ -166,40 +166,6 @@ describe("DCEL", function(){
         assert.deepEqual( newVertex.outGoingEdges[0].face, f );
 
     });
-
-    // it("Add vertex on edge", function(){
-    //     var f  =  new Face();
-    //     var v1 = new Vertex(-10,10);
-    //     var v2 = new Vertex(-10,-10);
-    //     var v3 = new Vertex(0,-10);
-
-    //     var h     = new Edge( v2 );
-    //     var hTwin = new Edge( v1 );
-    //     v2.outGoingEdges.push(hTwin);
-    //     var hNext = new Edge( v3 );
-
-    //     h.face     = f;
-    //     hNext.face = f;
-
-    //     h.twin    = hTwin;
-    //     h.next    = hNext;
-
-    //     var dcel = new DCEL(h);
-    //     var newVertex = new Vertex( -5, -10 );
-
-    //     dcel.addVertexOnEdge( newVertex, h );
-    //     assert.deepEqual( hNext.target, newVertex );
-    //     // assert.deepEqual( newVertex.outGoingEdges[0].next , hNext );
-    //     // assert.deepEqual( h.next, newVertex.outGoingEdges[0].twin );
-    //     // assert.deepEqual( h.next.target , newVertex );
-    //     // assert.deepEqual( h.next.twin , newVertex.outGoingEdges[0] );
-    //     // assert.deepEqual( newVertex.outGoingEdges[0].target, v2 );
-    //     // assert.deepEqual( v2.outGoingEdges.length, 2 );
-
-    //     // assert.deepEqual( h.next.face, f );
-    //     // assert.deepEqual( newVertex.outGoingEdges[0].face, f );
-
-    // });
 });
 
 describe("DCEL", function() {
@@ -281,6 +247,62 @@ describe("DCEL", function() {
         assert.deepEqual( h6.face, v1.outGoingEdges[1].face);
         assert.deepEqual( h1.face, v1.outGoingEdges[1].face);
 	});
+
+    it("Add vertex on edge", function(){
+        var face = new Face();
+        face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
+
+        var incEdges = face.getIncidentEdges(function( obj ){
+            return { target: obj.target.coordinate, origin: obj.origin().coordinate };
+        });
+
+        var newVertex = new Vertex( 0, -10 );
+        var edge;
+        face.traverseIncidentEdges( function(obj) {
+            if( obj.isPointOnEdge( newVertex ) ){
+                edge = obj;
+            }
+        });
+
+        var dcel = new DCEL( face.halfedge );
+        dcel.addVertexOnEdge( newVertex, edge );
+
+        incEdges = face.getIncidentEdges(function( obj ){
+            return {
+                origin: obj.origin().coordinate,
+                target: obj.target.coordinate
+            };
+        });
+
+        assert.deepEqual( incEdges,
+            [
+                { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
+                { origin: { x: -10, y: -10 }, target: { x: 0, y: -10 } },
+                { origin: { x: 0, y: -10 }, target: { x: 10, y: -10 } },
+                { origin: { x: 10, y: -10 }, target: { x: 10, y: 10 } },
+                { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } }
+            ]
+        );
+
+        var twins = [];
+        face.halfedge.twin.traverse(function(e){
+            var obj =  {
+                origin: e.origin().coordinate,
+                target: e.target.coordinate
+            };
+            twins.push(obj);
+        });
+
+        assert.deepEqual( twinEdges,
+            [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+              { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+              { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+              { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
+              { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
+            ]
+        );
+        console.log(twins);
+    });
 });
 
 
