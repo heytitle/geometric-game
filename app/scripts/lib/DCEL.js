@@ -45,7 +45,6 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
             e[attrs[j]] = edges[index];
         }
         e.target.outGoingEdges.push( e.next );
-        t.target.outGoingEdges.push( t.next );
     }
 
     twinEdges[0].prev = twinEdges[1];
@@ -57,6 +56,10 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
     twinEdges[1].next = twinEdges[0];
     twinEdges[2].next = twinEdges[1];
     twinEdges[3].next = twinEdges[2];
+    for( var i = 0 ; i < twinEdges.length; i++ ) {
+        var t = twinEdges[i];
+        t.target.outGoingEdges.push( t.next );
+    }
 
 
     this.halfedge = edges[0];
@@ -143,11 +146,13 @@ function Edge(target){
 }
 
 Edge.prototype.origin = function(){
-    // console.log(this.toJSON());
     return this.prev.target;
 }
 
 Edge.prototype.isSameEdge = function( edge ){
+    if( !edge ){
+        console.log(edge);
+    }
     var sameTarget = edge.target.isSameVertex( this.target );
     var sameOrigin = this.origin().isSameVertex( edge.origin() );
     return sameTarget && sameOrigin;
@@ -275,9 +280,6 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 
     this.addVertexAt( vertex, halfedge1 );
     this.addVertexAt( vertex, halfedge2 );
-	// console.log(edge.prev.target.coordinate);
-	// console.log(edge.next.twin.target.coordinate);
-	// console.log(edge.next.target.coordinate);
 
     // edge.face.halfedge = halfedge1;
 
