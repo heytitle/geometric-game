@@ -86,17 +86,23 @@ Line.prototype.intersectWithLine = function( line ) {
     if( this.m == line.m ) { return null }
 
     var x;
+    var c = this.c;
+    var m = this.m;
     if( this.m == Infinity || line.m == Infinity ) {
         if( this.m == Infinity ) {
             x = this.originPoint.x;
+            c = line.c;
+            m = line.m;
         }else {
             x = line.originPoint.x;
+            c = this.c;
+            m = this.m;
         }
     }else {
         x = ( this.c - line.c ) / ( line.m - this.m );
     };
 
-    var y = this.m * x + this.c;
+    var y = m * x + c;
     return new Point( x, y );
 }
 

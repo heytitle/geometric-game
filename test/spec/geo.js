@@ -111,6 +111,17 @@ describe('Line', function(){
             var p = l1.intersectWithLine(l4);
             assert.equal( p.x, 5 );
             assert.equal( p.y, 6 );
+
+            p = l4.intersectWithLine(l1);
+            assert.equal( p.x, 5 );
+            assert.equal( p.y, 6 );
+
+            var ly = new Line( 0, 5, new Point(-10,-10) );
+            var lx = new Line( 1, 0, new Point(0,0 ) );
+
+            var p = ly.intersectWithLine(lx);
+            assert.equal( p.x, -10 );
+            assert.equal( p.y, 0 );
         });
     });
 
