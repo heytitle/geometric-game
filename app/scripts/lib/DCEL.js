@@ -330,26 +330,35 @@ DCEL.prototype.buildArrangement = function(lines) {
 	var currentFace = f;
 	var seedingEdge = f.halfedge;
 
-	for (line in lines) {
+	for (var i = 0; i < lines.length; ++i) {
+		var line = lines[i];
 		var intersect = f.intersectWithLine(line);
-		var left = intersect[0].x < intersect[1].x ? intersect[0] : intersect[1];
+		console.log(intersect.length);
+		if (intersect && intersect.length > 1) { 
+			var left = intersect[0].x < intersect[1].x ? intersect[0] : intersect[1];
 
-		seedingEdge.face.traverseIncidentEdges(function(e) {
-			if (e.isPointOnEdge(left)){
-				currentFace = e.face;
+			var seedingFace = seedingEdge.face;			
+			if (seedingFace) {
+				seedingFace.traverseIncidentEdges(function(e) {
+					if (e.isPointOnEdge(left)){
+						currentFace = e.face;
+					}
+				});
 			}
-		});
 
-		seedingEdge.twin.traverse(function(e) {
-			if (e.isPointOnEdge(left)){
-				currentFace = e.face;
-			}
-		});
+			seedingEdge.twin.traverse(function(e) {
+				if (e.isPointOnEdge(left)){
+					currentFace = e.face;
+				}
+			});
 
-		currentFace.traverseIncidentEdges(function(e) {
-			neighbor = e.twin.face;
-			if (neighbor) {neighbor.splitFaceByLine(line)}
-		});
-		seedingEdge = currentFace.splitFaceByLine(line);
+			currentFace.traverseIncidentEdges(function(e) {
+				neighbor = e.twin.face;
+				if (neighbor) {neighbor.splitFaceByLine(line)}
+			});
+			seedingEdge = currentFace.splitFaceByLine(line);
+		}
 	}		
+
+	this.initialEdge = seedingEdge;
 }

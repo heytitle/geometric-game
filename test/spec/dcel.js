@@ -8,9 +8,11 @@ var assert = require('assert');
 var fs = require('fs');
 var geo = fs.readFileSync('./app/scripts/lib/Geo.js','utf-8');
 var myCode = fs.readFileSync('./app/scripts/lib/DCEL.js','utf-8');
+var ham = fs.readFileSync('./app/scripts/lib/HamSandwich.js','utf-8');
 
 eval.call(null,geo);
 eval.call(null,myCode);
+eval.call(null,ham);
 
 describe('Edge', function(){
     describe('check same edge', function(){
@@ -283,23 +285,24 @@ describe("DCEL", function() {
             ]
         );
 
-        //var twins = [];
-        //face.halfedge.twin.traverse(function(e){
-        //    var obj =  {
-        //        origin: e.origin().coordinate,
-        //        target: e.target.coordinate
-        //    };
-        //    twins.push(obj);
-        //});
+        var twins = [];
+        face.halfedge.twin.traverse(function(e){
+            var obj =  {
+                origin: e.origin().coordinate,
+                target: e.target.coordinate
+            };
+            twins.push(obj);
+        });
 
-        //assert.deepEqual( twins,
-        //    [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
-        //      { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
-        //      { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
-        //      { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
-        //      { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
-        //    ]
-        //);
+		console.log( twins );
+        ///assert.deepEqual( twins,
+        ///    [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+        ///      { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+        ///      { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+        ///      { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
+        ///      { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
+        ///    ]
+        ///);
     });
     it("Split Face by line", function(){
         var face = new Face();
@@ -351,6 +354,19 @@ describe("DCEL", function() {
 		//				]
 		//				);
 	});
+
+	it("incremental construction", function () {
+		var lines = [new Line(1, 0, new Point(0,1)),
+					 new Line(1, 1, new Point(0,0))];
+
+		var edge = new Edge(new Vertex(0,0));
+		var dcel = new DCEL(edge);
+		dcel.buildArrangement(lines);
+		dcel.initialEdge.face.traverseIncidentEdges( function (e){
+			console.log(e.target.coordinate);
+		});
+	});
+
 });
 
 
