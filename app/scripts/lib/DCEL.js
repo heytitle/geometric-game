@@ -146,6 +146,7 @@ Edge.prototype.setTwin = function( e ) {
 }
 
 Edge.prototype.setOrigin = function( v ) {
+    var oldOrigin = this.origin();
     v.outGoingEdges.push(this);
 };
 
@@ -158,6 +159,15 @@ Vertex.prototype.isSameVertex = function( v ){
     return this.coordinate.isSamePoint( v.coordinate );
 }
 
+Vertex.prototype.removeEdge = function( e ) {
+    for( var i = 0; i < this.outGoingEdges.length; i++ ){
+        if( e.isSameEdge( this.outGoingEdges[i] ) ){
+            this.outGoingEdges.splice(i,1);
+            break;
+        }
+    }
+}
+
 function DCEL(edge){
     this.faces = [edge.face];
 
@@ -168,6 +178,7 @@ function DCEL(edge){
 DCEL.prototype.addVertexAt = function(vertex, halfedge) {
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
+
 	vertex.outGoingEdges.push(h2);
 	h1.twin = h2;
 	h2.twin = h1;
@@ -184,14 +195,12 @@ DCEL.prototype.addVertexAt = function(vertex, halfedge) {
 }
 
 DCEL.prototype.addVertexOnEdge = function( vertex, halfedge ) {
-    // this.addVertexAt( vertex, halfedge );
+    this.addVertexAt( vertex, halfedge );
 
-    h1 = new Edget
-    halfedge.next.target = vertex;
-
-    var newEdge = new Edge( halfedge.target );
-    halfedge.next.setTwin(newEdge);
-    newEdge.setOrigin( vertex );
+    h1 = halfedge.next;
+    h2 = h1.twin;
+    h3 = h2.next;
+    h4 = h3.twin;
 }
 
 DCEL.prototype.splitFace = function (halfedge, vertex) {

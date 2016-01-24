@@ -141,8 +141,8 @@ describe("DCEL", function(){
         var v3 = new Vertex(10,10);
 
         var h     = new Edge( v2 );
-        v2.outGoingEdges.push(h);
         var hTwin = new Edge( v1 );
+        v2.outGoingEdges.push(hTwin);
         var hNext = new Edge( v3 );
 
         h.face     = f;
@@ -166,6 +166,40 @@ describe("DCEL", function(){
         assert.deepEqual( newVertex.outGoingEdges[0].face, f );
 
     });
+
+    // it("Add vertex on edge", function(){
+    //     var f  =  new Face();
+    //     var v1 = new Vertex(-10,10);
+    //     var v2 = new Vertex(-10,-10);
+    //     var v3 = new Vertex(0,-10);
+
+    //     var h     = new Edge( v2 );
+    //     var hTwin = new Edge( v1 );
+    //     v2.outGoingEdges.push(hTwin);
+    //     var hNext = new Edge( v3 );
+
+    //     h.face     = f;
+    //     hNext.face = f;
+
+    //     h.twin    = hTwin;
+    //     h.next    = hNext;
+
+    //     var dcel = new DCEL(h);
+    //     var newVertex = new Vertex( -5, -10 );
+
+    //     dcel.addVertexOnEdge( newVertex, h );
+    //     assert.deepEqual( hNext.target, newVertex );
+    //     // assert.deepEqual( newVertex.outGoingEdges[0].next , hNext );
+    //     // assert.deepEqual( h.next, newVertex.outGoingEdges[0].twin );
+    //     // assert.deepEqual( h.next.target , newVertex );
+    //     // assert.deepEqual( h.next.twin , newVertex.outGoingEdges[0] );
+    //     // assert.deepEqual( newVertex.outGoingEdges[0].target, v2 );
+    //     // assert.deepEqual( v2.outGoingEdges.length, 2 );
+
+    //     // assert.deepEqual( h.next.face, f );
+    //     // assert.deepEqual( newVertex.outGoingEdges[0].face, f );
+
+    // });
 });
 
 describe("DCEL", function() {
@@ -205,7 +239,7 @@ describe("DCEL", function() {
 		var h5Twin = new Edge(v4);
 		var h6Twin = new Edge(v5);
 
-		h1Twin.next = h6Twin; 
+		h1Twin.next = h6Twin;
 		h2Twin.next = h1Twin;
 		h3Twin.next = h2Twin;
 		h4Twin.next = h3Twin;
@@ -247,6 +281,21 @@ describe("DCEL", function() {
         assert.deepEqual( h6.face, v1.outGoingEdges[1].face);
         assert.deepEqual( h1.face, v1.outGoingEdges[1].face);
 	});
+});
+
+
+describe("Vertex", function(){
+    it('Remove edge', function(){
+        var e = newEdge(4,4,10,10);
+        var v = e.prev.target;
+        v.outGoingEdges.push(e);
+        var e2 = newEdge(4,4,2,2);
+        e2.setOrigin(v);
+
+        v.removeEdge(e);
+        assert.equal( v.outGoingEdges.length, 1 );
+        assert.deepEqual( v.outGoingEdges[0], e2 );
+    });
 });
 
 function newEdge( x1,y1, x2,y2 ) {
