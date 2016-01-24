@@ -28,9 +28,9 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
     ];
     var twinEdges = [
         new Edge( vertices[3] ),
-        new Edge( vertices[2] ),
+        new Edge( vertices[0] ),
         new Edge( vertices[1] ),
-        new Edge( vertices[0] )
+        new Edge( vertices[2] )
     ];
     var attrs = ['next', 'prev'];
     for( var i = 0; i < 4; i++ ){
@@ -255,6 +255,9 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 
     this.addVertexAt( vertex, halfedge1 );
     this.addVertexAt( vertex, halfedge2 );
+	console.log(edge.prev.target.coordinate);
+	console.log(edge.next.twin.target.coordinate);
+	console.log(edge.next.target.coordinate);
 
     // edge.face.halfedge = halfedge1;
 

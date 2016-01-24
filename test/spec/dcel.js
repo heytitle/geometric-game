@@ -283,23 +283,23 @@ describe("DCEL", function() {
             ]
         );
 
-        var twins = [];
-        face.halfedge.twin.traverse(function(e){
-            var obj =  {
-                origin: e.origin().coordinate,
-                target: e.target.coordinate
-            };
-            twins.push(obj);
-        });
+        //var twins = [];
+        //face.halfedge.twin.traverse(function(e){
+        //    var obj =  {
+        //        origin: e.origin().coordinate,
+        //        target: e.target.coordinate
+        //    };
+        //    twins.push(obj);
+        //});
 
-        assert.deepEqual( twins,
-            [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
-              { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
-              { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
-              { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
-              { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
-            ]
-        );
+        //assert.deepEqual( twins,
+        //    [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+        //      { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+        //      { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+        //      { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
+        //      { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
+        //    ]
+        //);
     });
     it("Split Face by line", function(){
         var face = new Face();
@@ -310,60 +310,52 @@ describe("DCEL", function() {
         });
 
         var line = new Line( 1, 1, new Point(0,-1) );
-        // var edge;
 
         face.splitFaceByLine(line);
-
-        // face.traverseIncidentEdges( function(obj) {
-        //     if( obj.isPointOnEdge( newVertex ) ){
-        //         edge = obj;
-        //     }
-        // });
-
-        // var dcel = new DCEL( face.halfedge );
-        // dcel.addVertexOnEdge( newVertex, edge );
 
         incEdges = face.getIncidentEdges(function( obj ){
             return {
                 origin: obj.origin().coordinate,
                 target: obj.target.coordinate
-            };
-        });
-        console.log(incEdges);
+			};
+		});
+		//console.log(incEdges);
 
-        // assert.deepEqual( incEdges,
-        //     [
-        //         { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
-        //         { origin: { x: -10, y: -10 }, target: { x: 0, y: -10 } },
-        //         { origin: { x: 0, y: -10 }, target: { x: 10, y: -10 } },
-        //         { origin: { x: 10, y: -10 }, target: { x: 10, y: 10 } },
-        //         { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } }
-        //     ]
-        // );
+		assert.deepEqual( incEdges,
+				[
+				{ origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
+				{ origin: { x: -10, y: -10 }, target: { x: -9, y: -10 } },
+				{ origin: { x: -9, y: -10 }, target: { x: 10, y: -10 } },
+				{ origin: { x: 10, y: -10 }, target: { x: 10, y: 9} },
+				{ origin: { x: 10, y: 9}, target: { x: 10, y: 10 } },
+				{ origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } },
+				]
+				);
 
-        // var twins = [];
-        // face.halfedge.twin.traverse(function(e){
-        //     var obj =  {
-        //         origin: e.origin().coordinate,
-        //         target: e.target.coordinate
-        //     };
-        //     twins.push(obj);
-        // });
+		//		var twins = [];
+		//		face.halfedge.twin.traverse(function(e){
+		//			var obj =  {
+		//				origin: e.origin().coordinate,
+		//				target: e.target.coordinate
+		//			};
+		//			twins.push(obj);
+		//		});
 
-        // assert.deepEqual( twins,
-        //     [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
-        //       { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
-        //       { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
-        //       { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
-        //       { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
-        //     ]
-        // );
-    });
+		//		assert.deepEqual( twins,
+		//				[ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+		//				{ origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+		//				{ origin: { x: 10, y: 10 }, target: { x: 10, y: 9} },
+		//				{ origin: { x: 10, y: 9}, target: { x: 10, y: -10 } },
+		//				{ origin: { x: 10, y: -10 }, target: { x: -9, y: -10 } },
+		//				{ origin: { x: -9, y: -10 }, target: { x: -10, y: -10 } },
+		//				]
+		//				);
+	});
 });
 
 
 describe("Vertex", function(){
-    it('Remove edge', function(){
+	it('Remove edge', function(){
         var e = newEdge(4,4,10,10);
         var v = e.prev.target;
         v.outGoingEdges.push(e);
