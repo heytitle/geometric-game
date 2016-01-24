@@ -140,6 +140,15 @@ Edge.prototype.intersectWithLine = function( line ){
     }
 }
 
+Edge.prototype.setTwin = function( e ) {
+    this.twin = e;
+    e.twin = this;
+}
+
+Edge.prototype.setOrigin = function( v ) {
+    v.outGoingEdges.push(this);
+};
+
 function Vertex(x,y) {
     this.coordinate = new Point(x,y);
     this.outGoingEdges = [];
@@ -172,6 +181,17 @@ DCEL.prototype.addVertexAt = function(vertex, halfedge) {
 	h2.next.prev = h2;
 
     halfedge.target.outGoingEdges.push(h1);
+}
+
+DCEL.prototype.addVertexOnEdge = function( vertex, halfedge ) {
+    // this.addVertexAt( vertex, halfedge );
+
+    h1 = new Edget
+    halfedge.next.target = vertex;
+
+    var newEdge = new Edge( halfedge.target );
+    halfedge.next.setTwin(newEdge);
+    newEdge.setOrigin( vertex );
 }
 
 DCEL.prototype.splitFace = function (halfedge, vertex) {
