@@ -151,10 +151,9 @@ describe("DCEL", function(){
         h.twin    = hTwin;
         h.next    = hNext;
 
-        var dcel = new DCEL(h);
         var newVertex = new Vertex( -5, 5 );
 
-        dcel.addVertexAt( newVertex, h );
+        f.addVertexAt( newVertex, h );
         assert.deepEqual( newVertex.outGoingEdges[0].next , hNext );
         assert.deepEqual( h.next, newVertex.outGoingEdges[0].twin );
         assert.deepEqual( h.next.target , newVertex );
@@ -264,8 +263,8 @@ describe("DCEL", function() {
             }
         });
 
-        var dcel = new DCEL( face.halfedge );
-        dcel.addVertexOnEdge( newVertex, edge );
+        // var dcel = new DCEL( face.halfedge );
+        face.addVertexOnEdge( newVertex, edge );
 
         incEdges = face.getIncidentEdges(function( obj ){
             return {
@@ -301,6 +300,64 @@ describe("DCEL", function() {
               { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
             ]
         );
+    });
+    it("Split Face by line", function(){
+        var face = new Face();
+        face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
+
+        var incEdges = face.getIncidentEdges(function( obj ){
+            return { target: obj.target.coordinate, origin: obj.origin().coordinate };
+        });
+
+        var line = new Line( 1, 1, new Point(0,-1) );
+        // var edge;
+
+        face.splitFaceByLine(line);
+
+        // face.traverseIncidentEdges( function(obj) {
+        //     if( obj.isPointOnEdge( newVertex ) ){
+        //         edge = obj;
+        //     }
+        // });
+
+        // var dcel = new DCEL( face.halfedge );
+        // dcel.addVertexOnEdge( newVertex, edge );
+
+        incEdges = face.getIncidentEdges(function( obj ){
+            return {
+                origin: obj.origin().coordinate,
+                target: obj.target.coordinate
+            };
+        });
+        console.log(incEdges);
+
+        // assert.deepEqual( incEdges,
+        //     [
+        //         { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
+        //         { origin: { x: -10, y: -10 }, target: { x: 0, y: -10 } },
+        //         { origin: { x: 0, y: -10 }, target: { x: 10, y: -10 } },
+        //         { origin: { x: 10, y: -10 }, target: { x: 10, y: 10 } },
+        //         { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } }
+        //     ]
+        // );
+
+        // var twins = [];
+        // face.halfedge.twin.traverse(function(e){
+        //     var obj =  {
+        //         origin: e.origin().coordinate,
+        //         target: e.target.coordinate
+        //     };
+        //     twins.push(obj);
+        // });
+
+        // assert.deepEqual( twins,
+        //     [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+        //       { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+        //       { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+        //       { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
+        //       { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
+        //     ]
+        // );
     });
 });
 

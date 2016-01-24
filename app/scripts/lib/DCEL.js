@@ -100,6 +100,20 @@ Face.prototype.intersectWithLine = function( line ) {
     return;
 }
 
+Face.prototype.splitFaceByLine = function( line ){
+    var intersect = this.intersectWithLine( line );
+    var edge;
+    for( var i = 0; i < intersect.length; i++ ){
+        this.traverseIncidentEdges(function(e){
+            if( e.isPointOnEdge( intersect[i] ) ){
+                edge = e;
+            }
+        });
+        this.addVertexOnEdge( intersect[i], edge );
+    }
+    // console.log(edge.prev);
+}
+
 function Edge(target){
     this.target = target;
 
@@ -210,7 +224,7 @@ function DCEL(edge){
 	this.initialEdge = edge;
 }
 
-DCEL.prototype.addVertexAt = function(vertex, halfedge) {
+Face.prototype.addVertexAt = function(vertex, halfedge) {
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
 
@@ -229,7 +243,7 @@ DCEL.prototype.addVertexAt = function(vertex, halfedge) {
     halfedge.target.outGoingEdges.push(h1);
 }
 
-DCEL.prototype.addVertexOnEdge = function( vertex, edge) {
+Face.prototype.addVertexOnEdge = function( vertex, edge) {
 	var v1 = edge.target;
 	var v2 = edge.twin.target;
 
@@ -241,6 +255,8 @@ DCEL.prototype.addVertexOnEdge = function( vertex, edge) {
 
     this.addVertexAt( vertex, halfedge1 );
     this.addVertexAt( vertex, halfedge2 );
+
+    // edge.face.halfedge = halfedge1;
 
 	halfedge1.twin.prev = halfedge1.next.twin;
 	halfedge2.twin.prev = halfedge2.next.twin;
