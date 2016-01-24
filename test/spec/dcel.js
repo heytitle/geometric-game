@@ -98,6 +98,27 @@ describe('Face', function () {
             "Correct edges"
         );
 
+        var twins = [];
+        face.halfedge.twin.traverse(function(e){
+            twins.push(e.toJSON());
+        });
+
+        var ht = face.halfedge.twin;
+        assert.deepEqual(
+            ht.toJSON(),
+            { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } }
+        );
+
+        assert.deepEqual( twins,
+            [
+              { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+              { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+              { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+              { origin: { x: 10, y: -10 }, target: { x: -10, y: -10 } }
+            ]
+        );
+
+
         var vertices = face.getVertices( function(obj) {
             return {
                 x: obj.coordinate.x,
@@ -228,8 +249,7 @@ describe("DCEL", function() {
 		h5.face = f;
 		h6.face = f;
 
-        var dcel = new DCEL(h1);
-		dcel.splitFace(h1, v4);
+		f.splitFace(h1, v4);
 
         assert.deepEqual( v1.outGoingEdges.length, 2);
         assert.deepEqual( v1.outGoingEdges[1].target, v4);
@@ -252,7 +272,10 @@ describe("DCEL", function() {
         face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
 
         var incEdges = face.getIncidentEdges(function( obj ){
-            return { target: obj.target.coordinate, origin: obj.origin().coordinate };
+            return {
+                origin: obj.origin().coordinate,
+                target: obj.target.coordinate
+            };
         });
 
         var newVertex = new Vertex( 0, -10 );
@@ -263,7 +286,6 @@ describe("DCEL", function() {
             }
         });
 
-        // var dcel = new DCEL( face.halfedge );
         face.addVertexOnEdge( newVertex, edge );
 
         incEdges = face.getIncidentEdges(function( obj ){
@@ -283,24 +305,25 @@ describe("DCEL", function() {
             ]
         );
 
-        //var twins = [];
-        //face.halfedge.twin.traverse(function(e){
-        //    var obj =  {
-        //        origin: e.origin().coordinate,
-        //        target: e.target.coordinate
-        //    };
-        //    twins.push(obj);
-        //});
+        var twins = [];
+        face.halfedge.twin.traverse(function(e){
+            var obj =  {
+                origin: e.origin().coordinate,
+                target: e.target.coordinate
+            };
+            twins.push(obj);
+        });
 
-        //assert.deepEqual( twins,
-        //    [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
-        //      { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
-        //      { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
-        //      { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
-        //      { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
-        //    ]
-        //);
+        assert.deepEqual( twins,
+            [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+              { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+              { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+              { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
+              { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
+            ]
+        );
     });
+
     it("Split Face by line", function(){
         var face = new Face();
         face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
@@ -311,45 +334,32 @@ describe("DCEL", function() {
 
         var line = new Line( 1, 1, new Point(0,-1) );
 
-        face.splitFaceByLine(line);
+        var e = face.splitFaceByLine(line);
 
-        incEdges = face.getIncidentEdges(function( obj ){
-            return {
-                origin: obj.origin().coordinate,
-                target: obj.target.coordinate
-			};
-		});
-		//console.log(incEdges);
-
-		assert.deepEqual( incEdges,
-				[
-				{ origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
-				{ origin: { x: -10, y: -10 }, target: { x: -9, y: -10 } },
-				{ origin: { x: -9, y: -10 }, target: { x: 10, y: -10 } },
-				{ origin: { x: 10, y: -10 }, target: { x: 10, y: 9} },
-				{ origin: { x: 10, y: 9}, target: { x: 10, y: 10 } },
-				{ origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } },
-				]
-				);
-
-		//		var twins = [];
-		//		face.halfedge.twin.traverse(function(e){
-		//			var obj =  {
-		//				origin: e.origin().coordinate,
-		//				target: e.target.coordinate
-		//			};
-		//			twins.push(obj);
-		//		});
-
-		//		assert.deepEqual( twins,
-		//				[ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
-		//				{ origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
-		//				{ origin: { x: 10, y: 10 }, target: { x: 10, y: 9} },
-		//				{ origin: { x: 10, y: 9}, target: { x: 10, y: -10 } },
-		//				{ origin: { x: 10, y: -10 }, target: { x: -9, y: -10 } },
-		//				{ origin: { x: -9, y: -10 }, target: { x: -10, y: -10 } },
-		//				]
-		//				);
+        var edgesFace1 = [] ;
+        e.traverse( function(obj){
+            edgesFace1.push(obj.toJSON());
+        });
+        assert.deepEqual( edgesFace1,
+            [
+                { origin: { x: -9, y: -10 }, target: { x: 10, y: 9 } },
+                { origin: { x: 10, y: 9 }, target: { x: 10, y: 10 } },
+                { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } },
+                { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
+                { origin: { x: -10, y: -10 }, target: { x: -9, y: -10 } }
+            ]
+        );
+        var edgesFace2 = [];
+        e.twin.traverse( function(obj){
+            edgesFace2.push(obj.toJSON());
+        });
+        assert.deepEqual( edgesFace2,
+            [
+                { origin: { x: 10, y: 9 }, target: { x: -9, y: -10 } },
+                { origin: { x: -9, y: -10 }, target: { x: 10, y: -10 } },
+                { origin: { x: 10, y: -10 }, target: { x: 10, y: 9 } }
+            ]
+        );
 	});
 });
 

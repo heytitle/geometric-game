@@ -140,8 +140,7 @@ Face.prototype.splitFaceByLine = function( line ){
 		}
 	});
 
-	return this.splitFace( e, intersect[1]);
-    // console.log(edge.prev);
+	return this.splitFace( edge, intersect[1] );
 }
 
 function Edge(target){
@@ -304,7 +303,7 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 	halfedge2.next.twin.next = halfedge2.twin;
 }
 
-DCEL.prototype.splitFace = function (halfedge, vertex) {
+Face.prototype.splitFace = function (halfedge, vertex) {
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
 	f1 = new Face(h1);
@@ -366,5 +365,5 @@ DCEL.prototype.buildArrangement = function(lines) {
 			if (neighbor) {neighbor.splitFaceByLine(line)}
 		});
 		seedingEdge = f.splitFaceByLine(line);
-	}		
+	}
 }
