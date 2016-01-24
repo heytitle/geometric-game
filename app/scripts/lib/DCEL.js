@@ -37,6 +37,8 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
         var e = edges[i];
         var t = twinEdges[i];
         e.setTwin(t);
+        e.face = this;
+
         for( var j = 0; j < attrs.length; j++ ){
             var index = ( 4*j + (i+Math.pow(-1, j) * 1) )%4;
             e[attrs[j]] = edges[index];
@@ -74,6 +76,7 @@ Face.prototype.getIncidentEdges = function( parseFN ){
 }
 
 Face.prototype.traverseIncidentEdges = function( parseFN ) {
+    var start = this.halfedge.prev.target;
     var next = this.halfedge;
     do {
         if( parseFN ){
@@ -82,7 +85,7 @@ Face.prototype.traverseIncidentEdges = function( parseFN ) {
             console.log( next );
         }
         next = next.next;
-    } while ( !next.isSameEdge( this.halfedge)  );
+    } while ( !next.prev.target.isSameVertex( start )  );
 }
 
 Face.prototype.getVertices = function( parseFN ) {
@@ -114,22 +117,29 @@ Face.prototype.intersectWithLine = function( line ) {
 Face.prototype.splitFaceByLine = function( line ){
     var intersect = this.intersectWithLine( line );
     var edge;
+    console.log(intersect);
     for( var i = 0; i < intersect.length; i++ ){
+        console.log(i);
         this.traverseIncidentEdges(function(e){
             if( e.isPointOnEdge( intersect[i] ) ){
                 edge = e;
             }
         });
+        console.log(i);
         this.addVertexOnEdge( intersect[i], edge );
+        console.log('adver');
     }
 
 	this.traverseIncidentEdges(function(e) {
-		if( e.target == intersect[0] ) {
+		if( e.target.isSameVertex( intersect[0] ) ) {
 			edge = e;
 		}
 	});
 
-	return this.splitFace( edge, intersect[1] );
+
+	var res = this.splitFace( edge, intersect[1] );
+
+    return res;
 }
 
 function Edge(target){
@@ -243,7 +253,7 @@ Vertex.prototype.removeEdge = function( e ) {
 }
 
 function DCEL(edge){
-    this.faces = [edge.face];
+    // this.faces = [edge.face];
 
     /* Out-going edge from top left point */
 	this.initialEdge = edge;
@@ -346,32 +356,38 @@ DCEL.prototype.buildArrangement = function(lines) {
 	for (var i = 0; i < lines.length; ++i) {
 		var line = lines[i];
 		var intersect = f.intersectWithLine(line);
-		console.log(intersect.length);
-		if (intersect && intersect.length > 1) { 
+		if (intersect && intersect.length > 1) {
 			var left = intersect[0].x < intersect[1].x ? intersect[0] : intersect[1];
 
-			var seedingFace = seedingEdge.face;			
+			var seedingFace = seedingEdge.face;
 			if (seedingFace) {
 				seedingFace.traverseIncidentEdges(function(e) {
 					if (e.isPointOnEdge(left)){
+                        if( !e.face ){
+                            console.log(e.face);
+                        }
 						currentFace = e.face;
 					}
 				});
 			}
 
 			seedingEdge.twin.traverse(function(e) {
-				if (e.isPointOnEdge(left)){
+				if (e.isPointOnEdge(left) && e.face ){
 					currentFace = e.face;
 				}
 			});
 
 			currentFace.traverseIncidentEdges(function(e) {
-				neighbor = e.twin.face;
-				if (neighbor) {neighbor.splitFaceByLine(line)}
+                console.log(e.toJSON());
+				var neighbor = e.twin.face;
+				if (neighbor) {
+                    neighbor.splitFaceByLine(line)
+                }
 			});
 			seedingEdge = currentFace.splitFaceByLine(line);
 		}
-	}		
+	}
+            console.log('xx');
 
 	this.initialEdge = seedingEdge;
 }

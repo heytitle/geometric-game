@@ -365,15 +365,15 @@ describe("DCEL", function() {
 	});
 
 	it("incremental construction", function () {
-		var lines = [new Line(1, 0, new Point(0,1)),
-					 new Line(1, 1, new Point(0,0))];
+		var lines = [new Line(1, 0, new Point(0,1))
+					 // new Line(1, 1, new Point(0,0))
+        ];
 
-		var edge = new Edge(new Vertex(0,0));
-		var dcel = new DCEL(edge);
+		var dcel = new DCEL();
 		dcel.buildArrangement(lines);
-		dcel.initialEdge.face.traverseIncidentEdges( function (e){
-			console.log(e.target.coordinate);
-		});
+		// dcel.initialEdge.face.traverseIncidentEdges( function (e){
+		// 	console.log(e.target.coordinate);
+		// });
 	});
 
 });
