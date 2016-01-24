@@ -183,15 +183,31 @@ DCEL.prototype.addVertexAt = function(vertex, halfedge) {
     halfedge.target.outGoingEdges.push(h1);
 }
 
-DCEL.prototype.addVertexOnEdge = function( vertex, halfedge ) {
-    // this.addVertexAt( vertex, halfedge );
+DCEL.prototype.addVertexOnEdge = function( vertex, Edge edge) {
+	v1 = edge.target;
+	v2 = edge.twin.target;
+	edge.target = undefined;
+	edge.twin.target = undefined;
 
-    h1 = new Edget
-    halfedge.next.target = vertex;
+	v1.outGoingEdges.remove(edge.twin);
+	v2.outGoingEdges.remove(edge);
 
-    var newEdge = new Edge( halfedge.target );
-    halfedge.next.setTwin(newEdge);
-    newEdge.setOrigin( vertex );
+	halfedge1 = edge.prev;
+	halfedge2 = edge.next.twin;
+    this.addVertexAt( vertex, halfedge1 );
+    this.addVertexAt( vertex, halfedge2 );
+
+	halfedge1.twin.prev = halfedge1.next.twin;
+	halfedge2.twin.prev = halfedge2.next.twin;
+
+	halfedge1.next.next = halfedge2.next.twin;
+	halfedge2.next.next = halfedge1.next.twin;
+
+	halfedge1.next.twin.prev = halfedge2.next;
+	halfedge2.next.twin.prev = halfedge1.next;
+
+	halfedge1.next.twin.next = halfedge1.twin;
+	halfedge2.next.twin.next = halfedge2.twin;
 }
 
 DCEL.prototype.splitFace = function (halfedge, vertex) {
