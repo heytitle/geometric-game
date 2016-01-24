@@ -37,39 +37,17 @@ Face.prototype.initWithBoundary = function( bottomLeft, topRight ){
         var e = edges[i];
         var t = twinEdges[i];
         e.face = this;
-
-        e.setTwin(t);
-
+        e.twin = t;
+        t.twin = e;
         for( var j = 0; j < attrs.length; j++ ){
-            var index = ( 4*j + (i+Math.pow(-1, j)) )%4;
+            var index = ( 4*j + (i+Math.pow(-1, j) * 1) )%4;
             e[attrs[j]] = edges[index];
+            t[attrs[j]] = twinEdges[index];
         }
         e.target.outGoingEdges.push( e.next );
-    }
-
-    twinEdges[0].prev = twinEdges[1];
-    twinEdges[1].prev = twinEdges[2];
-    twinEdges[2].prev = twinEdges[3];
-    twinEdges[3].prev = twinEdges[0];
-
-    twinEdges[0].next = twinEdges[3];
-    twinEdges[1].next = twinEdges[0];
-    twinEdges[2].next = twinEdges[1];
-    twinEdges[3].next = twinEdges[2];
-    for( var i = 0 ; i < twinEdges.length; i++ ) {
-        var t = twinEdges[i];
         t.target.outGoingEdges.push( t.next );
     }
-
-
     this.halfedge = edges[0];
-}
-
-Edge.prototype.toJSON = function(){
-    return {
-        origin: this.origin().coordinate,
-        target: this.target.coordinate
-    }
 }
 
 Face.prototype.getIncidentEdges = function( parseFN ){
@@ -157,9 +135,6 @@ Edge.prototype.origin = function(){
 }
 
 Edge.prototype.isSameEdge = function( edge ){
-    if( !edge ){
-        console.log(edge);
-    }
     var sameTarget = edge.target.isSameVertex( this.target );
     var sameOrigin = this.origin().isSameVertex( edge.origin() );
     return sameTarget && sameOrigin;
@@ -287,6 +262,9 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 
     this.addVertexAt( vertex, halfedge1 );
     this.addVertexAt( vertex, halfedge2 );
+	console.log(edge.prev.target.coordinate);
+	console.log(edge.next.twin.target.coordinate);
+	console.log(edge.next.target.coordinate);
 
     // edge.face.halfedge = halfedge1;
 
@@ -304,6 +282,8 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 }
 
 Face.prototype.splitFace = function (halfedge, vertex) {
+	if (!halfedge || ! vertex) { return }
+
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
 	f1 = new Face(h1);
@@ -360,10 +340,21 @@ DCEL.prototype.buildArrangement = function(lines) {
 			}
 		});
 
+		seedingEdge.twin.traverse(function(e) {
+			if (e.isPointOnEdge(left)){
+				currentFace = e.face;
+			}
+		});
+
 		currentFace.traverseIncidentEdges(function(e) {
 			neighbor = e.twin.face;
 			if (neighbor) {neighbor.splitFaceByLine(line)}
 		});
+<<<<<<< HEAD
 		seedingEdge = f.splitFaceByLine(line);
 	}
+=======
+		seedingEdge = currentFace.splitFaceByLine(line);
+	}
+>>>>>>> 961e0a5f87a0e4ebfbae03d18911e6a4c46a2351
 }
