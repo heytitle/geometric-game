@@ -147,6 +147,7 @@ Edge.prototype.setTwin = function( e ) {
 
 Edge.prototype.setOrigin = function( v ) {
     var oldOrigin = this.origin();
+    oldOrigin.removeEdge(this);
     v.outGoingEdges.push(this);
 };
 
