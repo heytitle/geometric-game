@@ -293,7 +293,7 @@ describe("DCEL", function() {
             twins.push(obj);
         });
 
-        assert.deepEqual( twinEdges,
+        assert.deepEqual( twins,
             [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
               { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
               { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
@@ -301,7 +301,6 @@ describe("DCEL", function() {
               { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
             ]
         );
-        console.log(twins);
     });
 });
 
