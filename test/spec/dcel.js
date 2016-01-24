@@ -371,9 +371,13 @@ describe("DCEL", function() {
 
 		var dcel = new DCEL();
 		dcel.buildArrangement(lines);
-		// dcel.initialEdge.face.traverseIncidentEdges( function (e){
-		// 	console.log(e.target.coordinate);
-		// });
+        var edges = [];
+		dcel.initialEdge.twin.face.traverseIncidentEdges( function (e){
+            edges.push( e.toJSON()) ;
+		});
+        console.log('-------');
+        console.log(edges);
+
 	});
 
 });
