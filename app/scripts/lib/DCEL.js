@@ -146,6 +146,8 @@ Edge.prototype.setTwin = function( e ) {
 }
 
 Edge.prototype.setOrigin = function( v ) {
+    var oldOrigin = this.origin();
+    oldOrigin.removeEdge(this);
     v.outGoingEdges.push(this);
 };
 
@@ -158,6 +160,15 @@ Vertex.prototype.isSameVertex = function( v ){
     return this.coordinate.isSamePoint( v.coordinate );
 }
 
+Vertex.prototype.removeEdge = function( e ) {
+    for( var i = 0; i < this.outGoingEdges.length; i++ ){
+        if( e.isSameEdge( this.outGoingEdges[i] ) ){
+            this.outGoingEdges.splice(i,1);
+            break;
+        }
+    }
+}
+
 function DCEL(edge){
     this.faces = [edge.face];
 
@@ -168,6 +179,7 @@ function DCEL(edge){
 DCEL.prototype.addVertexAt = function(vertex, halfedge) {
 	h1 = new Edge(vertex);
 	h2 = new Edge(halfedge.target);
+
 	vertex.outGoingEdges.push(h2);
 	h1.twin = h2;
 	h2.twin = h1;
