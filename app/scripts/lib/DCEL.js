@@ -350,11 +350,6 @@ DCEL.prototype.buildArrangement = function(lines) {
 			neighbor = e.twin.face;
 			if (neighbor) {neighbor.splitFaceByLine(line)}
 		});
-<<<<<<< HEAD
-		seedingEdge = f.splitFaceByLine(line);
-	}
-=======
 		seedingEdge = currentFace.splitFaceByLine(line);
 	}
->>>>>>> 961e0a5f87a0e4ebfbae03d18911e6a4c46a2351
 }
