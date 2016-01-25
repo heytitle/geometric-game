@@ -4,7 +4,6 @@
 
 
 'use strict';
-var chai = require('chai');
 var assert = require('assert');
 var fs = require('fs');
 var geo = fs.readFileSync('./app/scripts/lib/Geo.js','utf-8');
