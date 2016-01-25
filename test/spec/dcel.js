@@ -407,15 +407,14 @@ describe("DCEL", function() {
 
 		var dcel = new DCEL();
 		dcel.buildArrangement(lines);
-        // var edges = [];
+        var edges = [];
+		for (var i = 0; i < dcel.halfedges.length; ++i) {
+            edges.push( dcel.halfedges[i].target) ;
+		}
 
-        // console.log( dcel.initialEdge.face.getVertices() );
-        // console.log( dcel.initialEdge.next.twin.face.getVertices() );
-		// dcel.initialEdge.face.traverseIncidentEdges( function (e){
-            // edges.push( e.target.coordinate ) ;
-		// });
-        // // console.log('-------');
-        // console.log(edges);
+		console.log(dcel.halfedges.length);
+        console.log('-------');
+        console.log(edges);
         assert.ok(0);
 
 	});

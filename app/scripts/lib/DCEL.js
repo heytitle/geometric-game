@@ -248,11 +248,10 @@ Vertex.prototype.removeEdge = function( e ) {
     }
 }
 
-function DCEL(edge){
+function DCEL(){
     // this.faces = [edge.face];
 
     /* Out-going edge from top left point */
-	this.initialEdge = edge;
 }
 
 Face.prototype.addVertexAt = function(vertex, halfedge) {
@@ -347,40 +346,40 @@ Face.prototype.splitFace = function (halfedge, vertex) {
 DCEL.prototype.buildArrangement = function(lines) {
 	var f = new Face();
 	f.initWithBoundary(new Point(MIN_NUMBER, MIN_NUMBER), new Point(MAX_NUMBER, MAX_NUMBER));
-
-	var currentFace = f;
-	var seedingEdge = f.halfedge;
+	var representativeHalfedges = [f.halfedge];
 
 	for (var i = 0; i < lines.length; ++i) {
 		var line = lines[i];
 		var intersect = f.intersectWithLine(line);
+		
 		if (intersect && intersect.length > 1) {
-			var left = intersect[0].x < intersect[1].x ? intersect[0] : intersect[1];
+			var splittedRepEdges = [];
+			var oldFaces = [];
+			for (var j = 0; j < representativeHalfedges.length; ++j) {
+				var currentFace = representativeHalfedges[j].face;
+				var neighborFace = representativeHalfedges[j].twin.face;
 
-			var seedingFace = seedingEdge.face;
-			if (seedingFace) {
-				seedingFace.traverseIncidentEdges(function(e) {
-					if (e.isPointOnEdge(left)){
-						currentFace = e.face;
-					}
-				});
+				if (currentFace) {
+					oldFaces.push(currentFace);
+					splittedRepEdges.push(currentFace.splitFaceByLine(line));
+				}
+				if(neighborFace) {
+					oldFaces.push(neighborFace);
+					splittedRepEdges.push(neighborFace.splitFaceByLine(line));
+				}
 			}
 
-			seedingEdge.twin.traverse(function(e) {
-				if (e.isPointOnEdge(left) && e.face ){
-					currentFace = e.face;
-				}
-			});
-
-			currentFace.traverseIncidentEdges(function(e) {
-				var neighbor = e.twin.face;
-				if (neighbor) {
-                    neighbor.splitFaceByLine(line)
-                }
-			});
-			seedingEdge = currentFace.splitFaceByLine(line);
+			for (var j = 0; j < oldFaces.length; ++j) {
+				oldFaces[i].traverseIncidentEdges( function(e) {
+					index = representativeHalfedges.indexOf(e);
+					representativeHalfedges.slice(index, 1);
+				});
+			}
+			for (var j = 0; j < splittedRepEdges.length; ++j) {
+				representativeHalfedges.push(splittedRepEdges[j]);
+			}
 		}
 	}
 
-	this.initialEdge = seedingEdge;
+	this.halfedges = representativeHalfedges;
 }
