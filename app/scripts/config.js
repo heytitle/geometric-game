@@ -1,8 +1,8 @@
 var IDCANVAS  = '#game-board';
 
-var BASE_SCORE = 10;
-var SPECIAL_ITEMS_TRADE = 3;
-var DIAMOND_MULTIPIER = 10;
+var BASE_SCORE = 5;
+var SPECIAL_ITEMS_TRADE = 1;
+var DIAMOND_MULTIPIER = 2;
 
 var DRAG_OPACITY = 0.5;
 
