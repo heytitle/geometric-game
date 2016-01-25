@@ -372,9 +372,11 @@ describe("DCEL", function() {
 		var dcel = new DCEL();
 		dcel.buildArrangement(lines);
         var edges = [];
-		dcel.initialEdge.twin.face.traverseIncidentEdges( function (e){
-            edges.push( e.toJSON()) ;
-		});
+		for (var i = 0; i < dcel.halfedges.length; ++i) {
+            edges.push( dcel.halfedges[i].target) ;
+		}
+
+		console.log(dcel.halfedges.length);
         console.log('-------');
         console.log(edges);
 
