@@ -79,6 +79,7 @@ Face.prototype.traverseIncidentEdges = function( parseFN ) {
     var start = this.halfedge.prev.target;
     var next = this.halfedge;
     do {
+        // console.log( next.toJSON() );
         if( parseFN ){
             parseFN(next);
         }else {
@@ -101,6 +102,12 @@ Face.prototype.getVertices = function( parseFN ) {
     return vertices;
 }
 
+Face.prototype.toJSON = function(){
+    return this.getVertices(function(obj){
+        return obj.coordinate;
+    });
+}
+
 Face.prototype.intersectWithLine = function( line ) {
     var intersect = [];
     this.traverseIncidentEdges( function(edge){
@@ -110,7 +117,7 @@ Face.prototype.intersectWithLine = function( line ) {
         }
     });
 
-    if( intersect ) { return intersect }
+    if( intersect.length == 2 ) { return intersect }
     return;
 }
 
@@ -350,36 +357,71 @@ DCEL.prototype.buildArrangement = function(lines) {
 
 	for (var i = 0; i < lines.length; ++i) {
 		var line = lines[i];
-		var intersect = f.intersectWithLine(line);
-		
-		if (intersect && intersect.length > 1) {
-			var splittedRepEdges = [];
-			var oldFaces = [];
-			for (var j = 0; j < representativeHalfedges.length; ++j) {
-				var currentFace = representativeHalfedges[j].face;
-				var neighborFace = representativeHalfedges[j].twin.face;
+        var splittedRepEdges = [];
+        var oldEdges = [];
+        var traversedFaces = [];
+        console.log('>>>>> Line ' + i );
+        debug( 0 ,' rep haft edges ', representativeHalfedges );
+        for (var j = 0; j < representativeHalfedges.length; ++j) {
+            var currentFace = representativeHalfedges[j].face;
+            var neighborFace = representativeHalfedges[j].twin.face;
 
-				if (currentFace) {
-					oldFaces.push(currentFace);
-					splittedRepEdges.push(currentFace.splitFaceByLine(line));
-				}
-				if(neighborFace) {
-					oldFaces.push(neighborFace);
-					splittedRepEdges.push(neighborFace.splitFaceByLine(line));
-				}
-			}
+            console.log('>>> Face ' + j);
+            console.log( currentFace.toJSON() );
 
-			for (var j = 0; j < oldFaces.length; ++j) {
-				oldFaces[i].traverseIncidentEdges( function(e) {
-					index = representativeHalfedges.indexOf(e);
-					representativeHalfedges.slice(index, 1);
-				});
-			}
-			for (var j = 0; j < splittedRepEdges.length; ++j) {
-				representativeHalfedges.push(splittedRepEdges[j]);
-			}
-		}
+            if (currentFace && currentFace.intersectWithLine(line) ) {
+                console.log('Current');
+                oldEdges.push(currentFace.halfedge);
+                splittedRepEdges.push(currentFace.splitFaceByLine(line));
+                traversedFaces.push(currentFace);
+            }
+
+            if(neighborFace && neighborFace.intersectWithLine(line) && traversedFaces.indexOf(neighborFace) != -1 ) {
+                console.log('Neighbor');
+                console.log( neighborFace.halfedge.toJSON() );
+                oldEdges.push(neighborFace.halfedge);
+                splittedRepEdges.push(neighborFace.splitFaceByLine(line));
+                traversedFaces.push(neighborFace);
+            }
+            debug(2, " > Old edge ", oldEdges );
+            console.log("\n\n");
+
+        }
+
+        for (var j = 0; j < oldEdges.length; ++j) {
+            index = representativeHalfedges.indexOf(oldEdges[j]);
+            if( index >= 0 ){
+                representativeHalfedges.splice(index, 1);
+            }
+        }
+
+        for (var j = 0; j < splittedRepEdges.length; ++j) {
+            representativeHalfedges.push(splittedRepEdges[j]);
+        }
+        debug( 0, " representativeHalfedges ", representativeHalfedges );
+
+        console.log("-----> All Face after adding line " + i );
+        for( var k = 0; k < representativeHalfedges.length; k++ ) {
+            var r = representativeHalfedges[k];
+            console.log( r.face.toJSON());
+            if( r.twin.face ){
+                console.log( r.twin.face.toJSON());
+            }
+        }
+        console.log("--------------------------------");
 	}
 
 	this.halfedges = representativeHalfedges;
+}
+
+function debug( no, caseName, arr, func ){
+    var tab = Array(no*4).join(" ");
+    console.log(tab+">>>>>>>> "+caseName +" <<<<<<< ");
+    for( var i = 0; i < arr.length; i++ ){
+        // if(func){
+        //     func( arr[i] );
+        // }
+        console.log(tab+ JSON.stringify(arr[i].toJSON()) );
+    }
+    console.log(tab+"-------------");
 }

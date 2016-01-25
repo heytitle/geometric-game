@@ -401,15 +401,16 @@ describe("DCEL", function() {
 
 	it("incremental construction", function () {
 		var lines = [
+			new Line(1, 0, new Point(0,2)),
             new Line(1, 0, new Point(0,1))
-					 // new Line(1, 1, new Point(0,0))
+            // new Line(1, 1, new Point(0,0))
         ];
 
 		var dcel = new DCEL();
 		dcel.buildArrangement(lines);
         var edges = [];
 		for (var i = 0; i < dcel.halfedges.length; ++i) {
-            edges.push( dcel.halfedges[i].target) ;
+            edges.push( dcel.halfedges[i].toJSON() );
 		}
 
 		console.log(dcel.halfedges.length);
