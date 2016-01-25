@@ -298,6 +298,8 @@ Face.prototype.addVertexOnEdge = function( vertex, edge) {
 
 	halfedge1.next.twin.next = halfedge1.twin;
 	halfedge2.next.twin.next = halfedge2.twin;
+
+    this.halfedge = halfedge1.next;
 }
 
 Face.prototype.splitFace = function (halfedge, vertex) {

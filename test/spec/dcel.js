@@ -4,6 +4,7 @@
 
 
 'use strict';
+var chai = require('chai');
 var assert = require('assert');
 var fs = require('fs');
 var geo = fs.readFileSync('./app/scripts/lib/Geo.js','utf-8');
@@ -299,11 +300,11 @@ describe("DCEL", function() {
 
         assert.deepEqual( incEdges,
             [
-                { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
                 { origin: { x: -10, y: -10 }, target: { x: 0, y: -10 } },
                 { origin: { x: 0, y: -10 }, target: { x: 10, y: -10 } },
                 { origin: { x: 10, y: -10 }, target: { x: 10, y: 10 } },
-                { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } }
+                { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } },
+                { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } }
             ]
         );
 
@@ -317,66 +318,105 @@ describe("DCEL", function() {
         });
 
         assert.deepEqual( twins,
-            [ { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
-              { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
-              { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
-              { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } },
-              { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } }
+            [
+                { origin: { x: 0, y: -10 }, target: { x: -10, y: -10 } },
+                { origin: { x: -10, y: -10 }, target: { x: -10, y: 10 } },
+                { origin: { x: -10, y: 10 }, target: { x: 10, y: 10 } },
+                { origin: { x: 10, y: 10 }, target: { x: 10, y: -10 } },
+                { origin: { x: 10, y: -10 }, target: { x: 0, y: -10 } }
             ]
         );
     });
 
-    it("Split Face by line", function(){
-        var face = new Face();
-        face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
+    describe("Split Face by line", function(){
+        var face;
+        beforeEach(function(){
+            face = new Face();
+            face.initWithBoundary( new Point( -10,-10 ), new Point(10,10 ) );
+        });
+        it("case 1", function(){
 
-        var incEdges = face.getIncidentEdges(function( obj ){
-            return { target: obj.target.coordinate, origin: obj.origin().coordinate };
+            var line = new Line( 1, 1, new Point(0,-1) );
+            var e = face.splitFaceByLine(line);
+
+            var edgesFace1 = [] ;
+            e.traverse( function(obj){
+                edgesFace1.push(obj.toJSON());
+            });
+            assert.deepEqual( edgesFace1,
+                [
+                    { origin: { x: -9, y: -10 }, target: { x: 10, y: 9 } },
+                    { origin: { x: 10, y: 9 }, target: { x: 10, y: 10 } },
+                    { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } },
+                    { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
+                    { origin: { x: -10, y: -10 }, target: { x: -9, y: -10 } }
+                ]
+            );
+            var edgesFace2 = [];
+            e.twin.traverse( function(obj){
+                edgesFace2.push(obj.toJSON());
+            });
+            assert.deepEqual( edgesFace2,
+                [
+                    { origin: { x: 10, y: 9 }, target: { x: -9, y: -10 } },
+                    { origin: { x: -9, y: -10 }, target: { x: 10, y: -10 } },
+                    { origin: { x: 10, y: -10 }, target: { x: 10, y: 9 } }
+                ]
+            );
         });
 
-        var line = new Line( 1, 1, new Point(0,-1) );
+        it("case 2", function(){
+            var line = new Line( 1, 0, new Point(0,-2) );
+            var e = face.splitFaceByLine(line);
 
-        var e = face.splitFaceByLine(line);
+            var f1 = e.face.getVertices(function(obj){
+                return obj.coordinate;
+            });
 
-        var edgesFace1 = [] ;
-        e.traverse( function(obj){
-            edgesFace1.push(obj.toJSON());
+
+            assert.deepEqual(
+                f1,
+                    [ { x: 10, y: -2 },
+                      { x: 10, y: 10 },
+                      { x: -10, y: 10 },
+                      { x: -10, y: -2 }
+                    ]
+            );
+
+            var f2 = e.twin.face.getVertices(function(obj){
+                return obj.coordinate;
+            });
+
+            assert.deepEqual(
+                f2,
+                    [ { x: -10, y: -2 },
+                      { x: -10, y: -10 },
+                      { x: 10, y: -10 },
+                      { x: 10, y: -2 }
+                    ]
+            );
+
         });
-        assert.deepEqual( edgesFace1,
-            [
-                { origin: { x: -9, y: -10 }, target: { x: 10, y: 9 } },
-                { origin: { x: 10, y: 9 }, target: { x: 10, y: 10 } },
-                { origin: { x: 10, y: 10 }, target: { x: -10, y: 10 } },
-                { origin: { x: -10, y: 10 }, target: { x: -10, y: -10 } },
-                { origin: { x: -10, y: -10 }, target: { x: -9, y: -10 } }
-            ]
-        );
-        var edgesFace2 = [];
-        e.twin.traverse( function(obj){
-            edgesFace2.push(obj.toJSON());
-        });
-        assert.deepEqual( edgesFace2,
-            [
-                { origin: { x: 10, y: 9 }, target: { x: -9, y: -10 } },
-                { origin: { x: -9, y: -10 }, target: { x: 10, y: -10 } },
-                { origin: { x: 10, y: -10 }, target: { x: 10, y: 9 } }
-            ]
-        );
 	});
 
 	it("incremental construction", function () {
-		var lines = [new Line(1, 0, new Point(0,1))
+		var lines = [
+            new Line(1, 0, new Point(0,1))
 					 // new Line(1, 1, new Point(0,0))
         ];
 
 		var dcel = new DCEL();
 		dcel.buildArrangement(lines);
-        var edges = [];
-		dcel.initialEdge.twin.face.traverseIncidentEdges( function (e){
-            edges.push( e.toJSON()) ;
-		});
-        console.log('-------');
-        console.log(edges);
+        // var edges = [];
+
+        // console.log( dcel.initialEdge.face.getVertices() );
+        // console.log( dcel.initialEdge.next.twin.face.getVertices() );
+		// dcel.initialEdge.face.traverseIncidentEdges( function (e){
+            // edges.push( e.target.coordinate ) ;
+		// });
+        // // console.log('-------');
+        // console.log(edges);
+        assert.ok(0);
 
 	});
 
