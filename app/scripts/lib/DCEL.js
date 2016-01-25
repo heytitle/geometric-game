@@ -368,17 +368,19 @@ DCEL.prototype.buildArrangement = function(lines) {
 
             console.log('>>> Face ' + j);
             console.log( currentFace.toJSON() );
+            if(neighborFace){
+                console.log(neighborFace.toJSON());
+                console.log( neighborFace.intersectWithLine(line) );
+            }
 
-            if (currentFace && currentFace.intersectWithLine(line) ) {
+            if (currentFace && currentFace.intersectWithLine(line) && traversedFaces.indexOf(currentFace) == -1 ) {
                 console.log('Current');
                 oldEdges.push(currentFace.halfedge);
                 splittedRepEdges.push(currentFace.splitFaceByLine(line));
                 traversedFaces.push(currentFace);
             }
 
-            if(neighborFace && neighborFace.intersectWithLine(line) && traversedFaces.indexOf(neighborFace) != -1 ) {
-                console.log('Neighbor');
-                console.log( neighborFace.halfedge.toJSON() );
+            if(neighborFace && neighborFace.intersectWithLine(line) ) {
                 oldEdges.push(neighborFace.halfedge);
                 splittedRepEdges.push(neighborFace.splitFaceByLine(line));
                 traversedFaces.push(neighborFace);
