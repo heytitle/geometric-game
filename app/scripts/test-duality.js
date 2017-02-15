@@ -5,8 +5,8 @@ var SCALING = 30;
 var normalPane = Snap("#normal-pane");
 var dualPane = Snap("#dual-pane");
 
-var HEIGHT = normalPane.node.offsetHeight;
-var WIDTH  = normalPane.node.offsetWidth;
+var HEIGHT = normalPane.node.clientHeight;
+var WIDTH  = normalPane.node.clientWidth;
 
 var SCALED_HEIGHT = HEIGHT/SCALING;
 var SCALED_WIDTH = WIDTH/SCALING;

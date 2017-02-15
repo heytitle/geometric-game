@@ -10,8 +10,8 @@ this.sepLine = this.board.line(0,0,0,600);
     this.mouseOriginPointer.addClass('mouse-origin-pointer');
     this.mouseOriginPointer.attr('opacity', DRAG_OPACITY );
 
-    this.SCALED_HEIGHT = this.board.node.offsetHeight/SCALING;
-    this.SCALED_WIDTH = this.board.node.offsetWidth/SCALING;
+    this.SCALED_HEIGHT = this.board.node.clientHeight/SCALING;
+    this.SCALED_WIDTH = this.board.node.clientWidth/SCALING;
 
     this.originBoundary = new Box( this.SCALED_WIDTH, this.SCALED_HEIGHT );
 
@@ -163,8 +163,8 @@ Game.prototype.initObjectMovement = function(){
 
         for( var i = 0; i< self.objects.length; i++ ){
             self.objects[i].move(
-                self.board.node.offsetWidth,
-                self.board.node.offsetHeight,
+                self.board.node.clientWidth,
+                self.board.node.clientHeight,
                 speedRatio
             );
         }
@@ -204,14 +204,16 @@ Game.prototype.setupLevel = function(){
 
     var setting = LEVEL_SETTING[level];
     console.log(setting.objects);
+    console.log(self.board.node.clientWidth);
+    console.log(self.board.node.clientHeight);
     Object.keys(setting.objects).forEach( function(type){
         for( var i = 0; i < setting.objects[type]; i++ ){
             self.soundFX.play('addObject');
             var obj = new Character(
                 self,
                 type,
-                randomInRange( 15,self.board.node.offsetWidth-15),
-                randomInRange( 15,self.board.node.offsetHeight-15)
+                randomInRange( 50, self.board.node.clientWidth-50),
+                randomInRange( 50, self.board.node.clientHeight-50)
             );
             self.objects.push( obj );
         }
@@ -436,13 +438,13 @@ Game.prototype.updateSepLine = function( dx, dy ){
 
 Game.prototype.toOriginCoordinate = function( p ) {
     return new Point(
-        (p.x - this.board.node.offsetWidth/2)/SCALING,
-        (this.board.node.offsetHeight/2 - p.y)/SCALING
+        (p.x - this.board.node.clientWidth/2)/SCALING,
+        (this.board.node.clientHeight/2 - p.y)/SCALING
     );
 }
 
 Game.prototype.toCanvasCoordinate = function( p ) {
-    var x = SCALING*p.x + this.board.node.offsetWidth/2;
-    var y = this.board.node.offsetHeight/2 - SCALING*p.y;
+    var x = SCALING*p.x + this.board.node.clientWidth/2;
+    var y = this.board.node.clientHeight/2 - SCALING*p.y;
     return new Point(x,y);
 }

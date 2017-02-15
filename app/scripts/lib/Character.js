@@ -24,9 +24,7 @@ function Character( game, name,x,y ){
             obj.moveTurn = 0;
             directX = plusOrMinus();
             directY = plusOrMinus();
-            // console.log(directX, directY);
         }
-        /* adjust x, y base on characteristic style; */
         delX = directX * velocity * MOVEMENT_CHARACTER[obj.type].speedX;
         delY = directY * velocity * MOVEMENT_CHARACTER[obj.type].speedY;
 
